@@ -7,7 +7,10 @@
     "start": "vite --port 3000",
     "build": "vite build && tsc",
     "serve": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "bun run lint:js && bun run lint:ts",
+    "lint:js": "biome check --fix",
+    "lint:ts": "tsc --noEmit"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.6",
@@ -24,6 +27,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
     "@types/react": "^19.0.8",
