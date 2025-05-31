@@ -1,6 +1,5 @@
 import Controls from './Controls'
 import CountdownTimer from './CountdownTimer'
-import WorkoutLabel from './WorkoutLabel'
 
 function WorkoutPanel({
   currentWorkoutLabel,
@@ -10,6 +9,7 @@ function WorkoutPanel({
   onNext,
   onPrevious,
   isRunning,
+  nextWorkoutLabel,
 }: {
   currentWorkoutLabel: string
   timeLeft: number
@@ -18,10 +18,16 @@ function WorkoutPanel({
   onNext: () => void
   onPrevious: () => void
   isRunning: boolean
+  nextWorkoutLabel?: string
 }) {
   return (
     <div className="flex flex-col items-center justify-center p-8">
-      <WorkoutLabel label={currentWorkoutLabel} />
+      <h2 className="text-3xl font-bold mb-4">{currentWorkoutLabel}</h2>
+      {nextWorkoutLabel && (
+        <p className="text-xl text-gray-600 mt-2">
+          Up next: {nextWorkoutLabel}
+        </p>
+      )}
       <CountdownTimer timeLeft={timeLeft} />
       <Controls
         onStart={onStart}

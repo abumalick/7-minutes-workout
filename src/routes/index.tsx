@@ -40,6 +40,8 @@ function App() {
   const [isRunning, setIsRunning] = React.useState(false)
 
   const currentWorkout = WORKOUT_SEQUENCE[currentIndex]
+  const nextWorkoutIndex = (currentIndex + 1) % WORKOUT_SEQUENCE.length
+  const nextWorkoutLabel = WORKOUT_SEQUENCE[nextWorkoutIndex].label
 
   useInterval(
     () => {
@@ -87,6 +89,9 @@ function App() {
         onNext={handleNext}
         onPrevious={handlePrevious}
         isRunning={isRunning}
+        nextWorkoutLabel={
+          currentWorkout.label === 'Rest' ? nextWorkoutLabel : undefined
+        }
       />
     </div>
   )
