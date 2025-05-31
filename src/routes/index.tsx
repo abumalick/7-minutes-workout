@@ -143,7 +143,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="py-8">
+      <header className="absolute top-0 left-0 right-0 py-8 bg-gray-100 z-10">
         <h1 className="text-4xl font-bold text-center">7 Minute Workout</h1>
       </header>
       <main className="flex-grow flex flex-col items-center justify-center">
