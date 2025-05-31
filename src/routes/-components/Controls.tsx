@@ -1,4 +1,4 @@
-import { Play, Pause, SkipForward, SkipBack } from 'lucide-react'
+import { Pause, Play, SkipBack, SkipForward } from 'lucide-react'
 
 function Controls({
   onStart,

@@ -77,22 +77,24 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <header className="mb-8">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <header className="py-8">
         <h1 className="text-4xl font-bold text-center">7 Minute Workout</h1>
       </header>
-      <WorkoutPanel
-        currentWorkoutLabel={currentWorkout.label}
-        timeLeft={timeLeft}
-        onStart={handleStart}
-        onPause={handlePause}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-        isRunning={isRunning}
-        nextWorkoutLabel={
-          currentWorkout.label === 'Rest' ? nextWorkoutLabel : undefined
-        }
-      />
+      <main className="flex-grow flex flex-col items-center justify-center">
+        <WorkoutPanel
+          currentWorkoutLabel={currentWorkout.label}
+          timeLeft={timeLeft}
+          onStart={handleStart}
+          onPause={handlePause}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          isRunning={isRunning}
+          nextWorkoutLabel={
+            currentWorkout.label === 'Rest' ? nextWorkoutLabel : undefined
+          }
+        />
+      </main>
     </div>
   )
 }

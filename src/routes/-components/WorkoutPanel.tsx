@@ -1,5 +1,4 @@
 import Controls from './Controls'
-import CountdownTimer from './CountdownTimer'
 
 function WorkoutPanel({
   currentWorkoutLabel,
@@ -22,13 +21,15 @@ function WorkoutPanel({
 }) {
   return (
     <div className="flex flex-col items-center justify-center p-8">
-      <h2 className="text-3xl font-bold mb-4">{currentWorkoutLabel}</h2>
+      <h2 className="text-4xl font-bold">{currentWorkoutLabel}</h2>
       {nextWorkoutLabel && (
-        <p className="text-xl text-gray-600 mt-2">
+        <p className="text-xl font-bold text-gray-800 mt-2">
           Up next: {nextWorkoutLabel}
         </p>
       )}
-      <CountdownTimer timeLeft={timeLeft} />
+      <div className="text-6xl font-mono mb-8 mt-4">
+        {String(timeLeft).padStart(2, '0')}s
+      </div>
       <Controls
         onStart={onStart}
         onPause={onPause}
