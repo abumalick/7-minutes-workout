@@ -1,5 +1,6 @@
 {
   "name": "7minutes",
+  "portless": "my-workout",
   "private": true,
   "type": "module",
   "scripts": {
