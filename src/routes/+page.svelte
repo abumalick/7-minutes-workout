@@ -1,7 +1,15 @@
 <script lang="ts">
   import WorkoutPanel from '$lib/WorkoutPanel.svelte'
   import { play } from '$lib/sounds'
-  import { WORKOUT_SEQUENCE, isRest, next, prev, start, tick, type Transition } from '$lib/workout'
+  import {
+    WORKOUT_SEQUENCE,
+    isRest,
+    next,
+    prev,
+    start,
+    tick,
+    type Transition,
+  } from '$lib/workout'
 
   let currentIndex = $state(0)
   let timeLeft = $state(WORKOUT_SEQUENCE[0].duration)
@@ -23,7 +31,10 @@
   // exactly when running toggles — not on every tick.
   $effect(() => {
     if (!isRunning) return
-    const id = setInterval(() => apply(tick({ currentIndex, timeLeft, isRunning })), 1000)
+    const id = setInterval(
+      () => apply(tick({ currentIndex, timeLeft, isRunning })),
+      1000,
+    )
     return () => clearInterval(id)
   })
 </script>

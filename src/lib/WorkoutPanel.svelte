@@ -25,8 +25,12 @@
 <div class="flex flex-col items-center justify-center p-8">
   <h2 class="text-4xl font-bold">{currentWorkoutLabel}</h2>
   {#if nextWorkoutLabel}
-    <p class="text-xl font-bold text-gray-800 mt-2">Up next: {nextWorkoutLabel}</p>
+    <p class="text-xl font-bold text-gray-800 mt-2">
+      Up next: {nextWorkoutLabel}
+    </p>
   {/if}
-  <div class="text-6xl font-mono mb-8 mt-4">{String(timeLeft).padStart(2, '0')}s</div>
+  <div class="text-6xl font-mono mb-8 mt-4">
+    {String(timeLeft).padStart(2, '0')}s
+  </div>
   <Controls {isRunning} {onStart} {onPause} {onNext} {onPrevious} />
 </div>

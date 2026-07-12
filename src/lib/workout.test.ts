@@ -1,7 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { WORKOUT_SEQUENCE, isRest, next, prev, start, tick, type WorkoutState } from './workout'
+import {
+  WORKOUT_SEQUENCE,
+  isRest,
+  next,
+  prev,
+  start,
+  tick,
+  type WorkoutState,
+} from './workout'
 
-const at = (currentIndex: number, timeLeft: number, isRunning = true): WorkoutState => ({
+const at = (
+  currentIndex: number,
+  timeLeft: number,
+  isRunning = true,
+): WorkoutState => ({
   currentIndex,
   timeLeft,
   isRunning,
@@ -36,21 +48,33 @@ describe('tick', () => {
   })
 
   it('wraps after the last step, stops running, emits success then start', () => {
-    expect(tick(at(24, 0))).toEqual({ state: at(0, 30, false), cues: ['success', 'start'] })
+    expect(tick(at(24, 0))).toEqual({
+      state: at(0, 30, false),
+      cues: ['success', 'start'],
+    })
   })
 })
 
 describe('start', () => {
   it('starts running and cues start at the beginning of an exercise', () => {
-    expect(start(at(0, 30, false))).toEqual({ state: at(0, 30, true), cues: ['start'] })
+    expect(start(at(0, 30, false))).toEqual({
+      state: at(0, 30, true),
+      cues: ['start'],
+    })
   })
 
   it('starts running with no cue mid-exercise', () => {
-    expect(start(at(0, 20, false))).toEqual({ state: at(0, 20, true), cues: [] })
+    expect(start(at(0, 20, false))).toEqual({
+      state: at(0, 20, true),
+      cues: [],
+    })
   })
 
   it('starts running with no cue on a Rest step', () => {
-    expect(start(at(1, 10, false))).toEqual({ state: at(1, 10, true), cues: [] })
+    expect(start(at(1, 10, false))).toEqual({
+      state: at(1, 10, true),
+      cues: [],
+    })
   })
 })
 
@@ -73,7 +97,10 @@ describe('next', () => {
 
 describe('prev', () => {
   it('wraps backward from the first step, success then start', () => {
-    expect(prev(at(0, 30))).toEqual({ state: at(24, 30), cues: ['success', 'start'] })
+    expect(prev(at(0, 30))).toEqual({
+      state: at(24, 30),
+      cues: ['success', 'start'],
+    })
   })
 
   it('leaves an active exercise with success, enters Rest with no start', () => {

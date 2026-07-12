@@ -22,6 +22,7 @@
 ## File Structure
 
 **Created:**
+
 - `svelte.config.js` — SvelteKit config (adapter-static, vitePreprocess)
 - `vite.config.ts` — Vite plugins (tailwind + sveltekit) + vitest config
 - `tsconfig.json` — extends generated `.svelte-kit/tsconfig.json` (replaces the React one)
@@ -49,12 +50,14 @@
 Get a minimal SvelteKit app booting in this repo. No app logic yet — just a "Hello" page proving the toolchain works.
 
 **Files:**
+
 - Delete: all React/config files listed above
 - Create: `svelte.config.js`, `vite.config.ts`, `tsconfig.json`, `eslint.config.js`, `.prettierrc`, `.gitignore`, `src/app.html`, `src/app.css`, `src/routes/+layout.svelte`, `src/routes/+layout.ts`, `src/routes/+page.svelte` (placeholder)
 - Modify: `package.json` (deps via bun, then scripts)
 - Move: `public/` → `static/`, `src/assets/sounds/` → `src/lib/assets/sounds/`
 
 **Interfaces:**
+
 - Produces: `$lib` alias (SvelteKit built-in) → `src/lib`; running `bun run dev` on port 3000; `bun run test` via vitest.
 
 - [ ] **Step 1: Remove React/tooling dependencies**
@@ -301,10 +304,12 @@ git commit -m "chore: scaffold SvelteKit, remove React toolchain"
 The heart of the app: sequence data + pure transition functions. Written test-first.
 
 **Files:**
+
 - Create: `src/lib/workout.ts`
 - Test: `src/lib/workout.test.ts`
 
 **Interfaces:**
+
 - Produces:
   - `type WorkoutState = { currentIndex: number; timeLeft: number; isRunning: boolean }`
   - `type Cue = 'start' | 'tick' | 'success'`
@@ -321,9 +326,21 @@ The heart of the app: sequence data + pure transition functions. Written test-fi
 
 ```ts
 import { describe, expect, it } from 'vitest'
-import { WORKOUT_SEQUENCE, isRest, next, prev, start, tick, type WorkoutState } from './workout'
+import {
+  WORKOUT_SEQUENCE,
+  isRest,
+  next,
+  prev,
+  start,
+  tick,
+  type WorkoutState,
+} from './workout'
 
-const at = (currentIndex: number, timeLeft: number, isRunning = true): WorkoutState => ({
+const at = (
+  currentIndex: number,
+  timeLeft: number,
+  isRunning = true,
+): WorkoutState => ({
   currentIndex,
   timeLeft,
   isRunning,
@@ -358,21 +375,33 @@ describe('tick', () => {
   })
 
   it('wraps after the last step, stops running, emits success then start', () => {
-    expect(tick(at(24, 0))).toEqual({ state: at(0, 30, false), cues: ['success', 'start'] })
+    expect(tick(at(24, 0))).toEqual({
+      state: at(0, 30, false),
+      cues: ['success', 'start'],
+    })
   })
 })
 
 describe('start', () => {
   it('starts running and cues start at the beginning of an exercise', () => {
-    expect(start(at(0, 30, false))).toEqual({ state: at(0, 30, true), cues: ['start'] })
+    expect(start(at(0, 30, false))).toEqual({
+      state: at(0, 30, true),
+      cues: ['start'],
+    })
   })
 
   it('starts running with no cue mid-exercise', () => {
-    expect(start(at(0, 20, false))).toEqual({ state: at(0, 20, true), cues: [] })
+    expect(start(at(0, 20, false))).toEqual({
+      state: at(0, 20, true),
+      cues: [],
+    })
   })
 
   it('starts running with no cue on a Rest step', () => {
-    expect(start(at(1, 10, false))).toEqual({ state: at(1, 10, true), cues: [] })
+    expect(start(at(1, 10, false))).toEqual({
+      state: at(1, 10, true),
+      cues: [],
+    })
   })
 })
 
@@ -386,13 +415,19 @@ describe('next', () => {
   })
 
   it('wraps to the first step and preserves isRunning', () => {
-    expect(next(at(24, 30, false))).toEqual({ state: at(0, 30, false), cues: ['start'] })
+    expect(next(at(24, 30, false))).toEqual({
+      state: at(0, 30, false),
+      cues: ['start'],
+    })
   })
 })
 
 describe('prev', () => {
   it('wraps backward from the first step, success then start', () => {
-    expect(prev(at(0, 30))).toEqual({ state: at(24, 30), cues: ['success', 'start'] })
+    expect(prev(at(0, 30))).toEqual({
+      state: at(24, 30),
+      cues: ['success', 'start'],
+    })
   })
 
   it('leaves an active exercise with success, enters Rest with no start', () => {
@@ -410,7 +445,11 @@ Expected: FAIL — cannot resolve `./workout`.
 
 ```ts
 export type WorkoutStep = { label: string; duration: number }
-export type WorkoutState = { currentIndex: number; timeLeft: number; isRunning: boolean }
+export type WorkoutState = {
+  currentIndex: number
+  timeLeft: number
+  isRunning: boolean
+}
 export type Cue = 'start' | 'tick' | 'success'
 export type Transition = { state: WorkoutState; cues: Cue[] }
 
@@ -447,13 +486,19 @@ export const WORKOUT_SEQUENCE: WorkoutStep[] = [
 export const isRest = (step: { label: string }): boolean => step.label === REST
 
 const advance = (i: number): number => (i + 1) % WORKOUT_SEQUENCE.length
-const retreat = (i: number): number => (i - 1 + WORKOUT_SEQUENCE.length) % WORKOUT_SEQUENCE.length
+const retreat = (i: number): number =>
+  (i - 1 + WORKOUT_SEQUENCE.length) % WORKOUT_SEQUENCE.length
 
 // Cues fired when moving off `fromIndex` onto `toIndex`.
 // Leaving an active exercise -> success; entering an exercise -> start. Rest emits neither.
-const stepCues = (fromIndex: number, toIndex: number, leavingActive: boolean): Cue[] => {
+const stepCues = (
+  fromIndex: number,
+  toIndex: number,
+  leavingActive: boolean,
+): Cue[] => {
   const cues: Cue[] = []
-  if (leavingActive && !isRest(WORKOUT_SEQUENCE[fromIndex])) cues.push('success')
+  if (leavingActive && !isRest(WORKOUT_SEQUENCE[fromIndex]))
+    cues.push('success')
   if (!isRest(WORKOUT_SEQUENCE[toIndex])) cues.push('start')
   return cues
 }
@@ -484,7 +529,11 @@ export function start(s: WorkoutState): Transition {
 
 function skip(s: WorkoutState, toIndex: number): Transition {
   return {
-    state: { ...s, currentIndex: toIndex, timeLeft: WORKOUT_SEQUENCE[toIndex].duration },
+    state: {
+      ...s,
+      currentIndex: toIndex,
+      timeLeft: WORKOUT_SEQUENCE[toIndex].duration,
+    },
     cues: stepCues(s.currentIndex, toIndex, s.timeLeft > 0),
   }
 }
@@ -517,10 +566,12 @@ git commit -m "feat: add pure workout timer logic with tests"
 Build the thin Svelte shell around the tested core and verify behavior in a browser.
 
 **Files:**
+
 - Create: `src/lib/sounds.ts`, `src/lib/Controls.svelte`, `src/lib/WorkoutPanel.svelte`
 - Modify: `src/routes/+page.svelte` (replace the placeholder)
 
 **Interfaces:**
+
 - Consumes: `WORKOUT_SEQUENCE`, `isRest`, `tick`, `start`, `next`, `prev`, `Transition`, `Cue` from `$lib/workout` (Task 2).
 - `sounds.ts` produces: `play(cue: Cue): void`.
 - `Controls.svelte` props: `{ isRunning: boolean; onStart: () => void; onPause: () => void; onNext: () => void; onPrevious: () => void }`.
@@ -535,14 +586,20 @@ import successUrl from './assets/sounds/success.mp3'
 import tickUrl from './assets/sounds/tick.mp3'
 import type { Cue } from './workout'
 
-const urls: Record<Cue, string> = { start: startUrl, tick: tickUrl, success: successUrl }
+const urls: Record<Cue, string> = {
+  start: startUrl,
+  tick: tickUrl,
+  success: successUrl,
+}
 const cache: Partial<Record<Cue, HTMLAudioElement>> = {}
 
 export function play(cue: Cue): void {
   if (!browser) return
   const audio = (cache[cue] ??= new Audio(urls[cue]))
   audio.currentTime = 0
-  audio.play().catch((error) => console.error(`Error playing ${cue} sound:`, error))
+  audio
+    .play()
+    .catch((error) => console.error(`Error playing ${cue} sound:`, error))
 }
 ```
 
@@ -629,9 +686,13 @@ export function play(cue: Cue): void {
 <div class="flex flex-col items-center justify-center p-8">
   <h2 class="text-4xl font-bold">{currentWorkoutLabel}</h2>
   {#if nextWorkoutLabel}
-    <p class="text-xl font-bold text-gray-800 mt-2">Up next: {nextWorkoutLabel}</p>
+    <p class="text-xl font-bold text-gray-800 mt-2">
+      Up next: {nextWorkoutLabel}
+    </p>
   {/if}
-  <div class="text-6xl font-mono mb-8 mt-4">{String(timeLeft).padStart(2, '0')}s</div>
+  <div class="text-6xl font-mono mb-8 mt-4">
+    {String(timeLeft).padStart(2, '0')}s
+  </div>
   <Controls {isRunning} {onStart} {onPause} {onNext} {onPrevious} />
 </div>
 ```
@@ -642,7 +703,15 @@ export function play(cue: Cue): void {
 <script lang="ts">
   import WorkoutPanel from '$lib/WorkoutPanel.svelte'
   import { play } from '$lib/sounds'
-  import { WORKOUT_SEQUENCE, isRest, next, prev, start, tick, type Transition } from '$lib/workout'
+  import {
+    WORKOUT_SEQUENCE,
+    isRest,
+    next,
+    prev,
+    start,
+    tick,
+    type Transition,
+  } from '$lib/workout'
 
   let currentIndex = $state(0)
   let timeLeft = $state(WORKOUT_SEQUENCE[0].duration)
@@ -664,7 +733,10 @@ export function play(cue: Cue): void {
   // exactly when running toggles — not on every tick.
   $effect(() => {
     if (!isRunning) return
-    const id = setInterval(() => apply(tick({ currentIndex, timeLeft, isRunning })), 1000)
+    const id = setInterval(
+      () => apply(tick({ currentIndex, timeLeft, isRunning })),
+      1000,
+    )
     return () => clearInterval(id)
   })
 </script>
@@ -676,8 +748,8 @@ export function play(cue: Cue): void {
   <main class="flex-grow flex flex-col items-center justify-center">
     <WorkoutPanel
       currentWorkoutLabel={currentWorkout.label}
-      timeLeft={timeLeft}
-      isRunning={isRunning}
+      {timeLeft}
+      {isRunning}
       nextWorkoutLabel={isRest(currentWorkout) ? nextWorkoutLabel : undefined}
       onStart={() => apply(start({ currentIndex, timeLeft, isRunning }))}
       onPause={() => (isRunning = false)}
@@ -696,6 +768,7 @@ Expected: `eslint` and `svelte-check` both pass with 0 errors. Fix any reported 
 - [ ] **Step 6: Verify behavior in a browser**
 
 Run: `bun run dev`, open `http://localhost:3000`. Confirm:
+
 - Title "7 Minute Workout", first exercise "Jumping Jacks", timer "30s".
 - Play starts the countdown; the last 5 seconds tick audibly; finishing an exercise plays the success sound and auto-advances to "Rest" showing "Up next: …".
 - Previous / Next jump steps and play the expected cues; Pause halts the countdown.
@@ -716,6 +789,7 @@ git commit -m "feat: build Svelte UI shell over workout logic"
 Bring docs in line with the new stack and confirm the whole toolchain is green.
 
 **Files:**
+
 - Modify: `CLAUDE.md`, `README.md`
 - Format: all files via Prettier
 
@@ -729,6 +803,7 @@ Expected: Prettier rewrites files to the configured style; re-run shows "unchang
 - [ ] **Step 2: Update `CLAUDE.md`**
 
 Rewrite the stack-specific sections so they describe the Svelte app. Replace the "Overview", "Package manager", "Commands", "Architecture", and "Conventions" sections with content matching reality:
+
 - Overview: SvelteKit + Svelte 5 runes + Vite + Tailwind v4, single prerendered route.
 - Package manager: bun (unchanged).
 - Commands: `bun run dev`/`start` (port 3000), `build`, `serve`, `test`, `test -- <path>`, `lint` (eslint + svelte-check), `format` (prettier).
@@ -744,6 +819,7 @@ Replace React/TanStack/CRA references with the SvelteKit stack and the command l
 - [ ] **Step 4: Full verification pass**
 
 Run each and confirm success:
+
 - `bun run test` → all tests pass
 - `bun run lint` → 0 errors
 - `bun run build` → static build succeeds (prerenders `/`)

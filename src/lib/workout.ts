@@ -1,5 +1,9 @@
 export type WorkoutStep = { label: string; duration: number }
-export type WorkoutState = { currentIndex: number; timeLeft: number; isRunning: boolean }
+export type WorkoutState = {
+  currentIndex: number
+  timeLeft: number
+  isRunning: boolean
+}
 export type Cue = 'start' | 'tick' | 'success'
 export type Transition = { state: WorkoutState; cues: Cue[] }
 
@@ -36,13 +40,19 @@ export const WORKOUT_SEQUENCE: WorkoutStep[] = [
 export const isRest = (step: { label: string }): boolean => step.label === REST
 
 const advance = (i: number): number => (i + 1) % WORKOUT_SEQUENCE.length
-const retreat = (i: number): number => (i - 1 + WORKOUT_SEQUENCE.length) % WORKOUT_SEQUENCE.length
+const retreat = (i: number): number =>
+  (i - 1 + WORKOUT_SEQUENCE.length) % WORKOUT_SEQUENCE.length
 
 // Cues fired when moving off `fromIndex` onto `toIndex`.
 // Leaving an active exercise -> success; entering an exercise -> start. Rest emits neither.
-const stepCues = (fromIndex: number, toIndex: number, leavingActive: boolean): Cue[] => {
+const stepCues = (
+  fromIndex: number,
+  toIndex: number,
+  leavingActive: boolean,
+): Cue[] => {
   const cues: Cue[] = []
-  if (leavingActive && !isRest(WORKOUT_SEQUENCE[fromIndex])) cues.push('success')
+  if (leavingActive && !isRest(WORKOUT_SEQUENCE[fromIndex]))
+    cues.push('success')
   if (!isRest(WORKOUT_SEQUENCE[toIndex])) cues.push('start')
   return cues
 }
@@ -66,13 +76,18 @@ export function tick(s: WorkoutState): Transition {
 
 export function start(s: WorkoutState): Transition {
   const atStepStart = s.timeLeft === WORKOUT_SEQUENCE[s.currentIndex].duration
-  const cues: Cue[] = !isRest(WORKOUT_SEQUENCE[s.currentIndex]) && atStepStart ? ['start'] : []
+  const cues: Cue[] =
+    !isRest(WORKOUT_SEQUENCE[s.currentIndex]) && atStepStart ? ['start'] : []
   return { state: { ...s, isRunning: true }, cues }
 }
 
 function skip(s: WorkoutState, toIndex: number): Transition {
   return {
-    state: { ...s, currentIndex: toIndex, timeLeft: WORKOUT_SEQUENCE[toIndex].duration },
+    state: {
+      ...s,
+      currentIndex: toIndex,
+      timeLeft: WORKOUT_SEQUENCE[toIndex].duration,
+    },
     cues: stepCues(s.currentIndex, toIndex, s.timeLeft > 0),
   }
 }
