@@ -12,3 +12,10 @@
 - [08:26] Feature complete — all 5 tasks committed; tests/lint/build green; browser-verified voice playback. Integration (merge/PR) left to user.
 - [08:33] Dev URL serving — mirror h2/ad3iya portless pattern — added scripts/dev-server.sh (env-strip + IPv4 bind + PORTLESS_STATE_DIR=~/.portless-dev), portless base name 'my-workout' (package.json), Vite allowedHosts '.dev.sageplex.com' (Vite 6 host check; ad3iya on Vite 8 didn't need it) — live at https://my-workout.dev.sageplex.com
 - [08:40] Voice UX — prepend movement name before explanation; strip parentheses for natural speech; regenerated 18 clips; STT-verified name is announced.
+
+## Session 2 (22:05) — build a "workout-from-youtube" skill that replicates the back-pain pipeline
+
+- [22:05] Skill shape — options: generalize scripts + playbook / pure playbook / mega-script — chose: generalize scripts + SKILL.md playbook — why: DRY + deterministic, keeps load-bearing prompt style stable; reversible.
+- [22:05] Pose metadata location — options: extend instruction entry with optional `image?:{accent,view,pose}` / sibling `<id>-poses.ts` — chose: extend instruction entry — why: one source of truth per exercise, fewer files, YAGNI; voice script ignores the field.
+- [22:05] Non-French voice handling — options: default male voice `onwK4e9ZLuTAKqWW03F9` + eleven_multilingual_v2 with env override / per-language picker — chose: default + env override documented in SKILL — why: multilingual model covers many langs; simplest, reversible.
+- [22:05] Skill name — options: workout-from-youtube / youtube-workout / add-workout — chose: workout-from-youtube — why: describes input→output clearly; matches project-skill naming.
