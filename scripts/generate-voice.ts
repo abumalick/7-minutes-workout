@@ -16,12 +16,18 @@ const force = process.argv.includes('--force')
 const outDir = 'src/lib/assets/voice/back-pain'
 mkdirSync(outDir, { recursive: true })
 
-for (const { slug, text } of backPainInstructions) {
+// Announce the movement name, then the explanation. Parentheses are stripped so
+// "Piriforme (gauche)" is spoken as "Piriforme gauche".
+const spokenName = (label: string): string =>
+  label.replace(/[()]/g, '').replace(/\s+/g, ' ').trim()
+
+for (const { slug, label, text } of backPainInstructions) {
   const out = `${outDir}/${slug}.mp3`
   if (existsSync(out) && !force) {
     console.log('skip', slug)
     continue
   }
+  const spoken = `${spokenName(label)}. ${text}`
   const res = await fetch(
     `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
     {
@@ -32,7 +38,7 @@ for (const { slug, text } of backPainInstructions) {
         accept: 'audio/mpeg',
       },
       body: JSON.stringify({
-        text,
+        text: spoken,
         model_id: MODEL,
         voice_settings: { stability: 0.5, similarity_boost: 0.75 },
       }),
