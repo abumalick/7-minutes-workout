@@ -5,3 +5,6 @@ dist-ssr
 *.local
 .svelte-kit
 /build
+
+# local scratch (not committed)
+.tmp/
