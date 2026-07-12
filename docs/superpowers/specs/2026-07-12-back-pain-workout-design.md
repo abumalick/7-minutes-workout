@@ -43,18 +43,18 @@ first argument. This is the only change to existing logic; behavior is identical
 Signature sketch:
 
 ```ts
-export type WorkoutStep = { label: string; duration: number; voice?: string }
-export type Workout = { id: string; name: string; steps: WorkoutStep[] }
+export type WorkoutStep = { label: string; duration: number; voice?: string };
+export type Workout = { id: string; name: string; steps: WorkoutStep[] };
 
-export function tick(steps: WorkoutStep[], s: WorkoutState): Transition
-export function start(steps: WorkoutStep[], s: WorkoutState): Transition
-export function next(steps: WorkoutStep[], s: WorkoutState): Transition
-export function prev(steps: WorkoutStep[], s: WorkoutState): Transition
+export function tick(steps: WorkoutStep[], s: WorkoutState): Transition;
+export function start(steps: WorkoutStep[], s: WorkoutState): Transition;
+export function next(steps: WorkoutStep[], s: WorkoutState): Transition;
+export function prev(steps: WorkoutStep[], s: WorkoutState): Transition;
 ```
 
 ### Workout data (`src/lib/workouts.ts`, new)
 
-Holds the *data*, separate from the pure logic:
+Holds the _data_, separate from the pure logic:
 
 - Defines the two `Workout` objects and a `WORKOUTS: Workout[]` registry.
 - The 7-minute sequence moves here from `workout.ts` (as `sevenMinuteWorkout`).
@@ -90,26 +90,26 @@ ends well before the tick window.
 
 Durations are authored (chapter gaps in the video are demo time, not hold time).
 
-| # | Label | Duration | Voice slug |
-|---|-------|----------|------------|
-| 1 | Flexion de hanche | 30 | 01-flexion-hanche |
-| 2 | Double flexion de hanche | 30 | 02-double-flexion-hanche |
-| 3 | Pont fessier | 30 | 03-pont-fessier |
-| 4 | Lordose – cyphose | 30 | 04-lordose-cyphose |
-| 5 | Rotation lombaire | 30 | 05-rotation |
-| 6 | Piriforme (gauche) | 30 | 06-piriforme-gauche |
-| 7 | Piriforme (droit) | 30 | 07-piriforme-droit |
-| 8 | Carré des lombes (gauche) | 30 | 08-carre-lombes-gauche |
-| 9 | Carré des lombes (droit) | 30 | 09-carre-lombes-droit |
-| 10 | Prière | 30 | 10-priere |
-| 11 | Dos de chat | 30 | 11-dos-de-chat |
-| 12 | Gainage alterné | 30 | 12-gainage-alterne |
-| 13 | Extension vertébrale | 30 | 13-extension-vertebrale |
-| 14 | Plan postérieur | 40 | 14-plan-posterieur |
-| 15 | Psoas iliaque (gauche) | 30 | 15-psoas-gauche |
-| 16 | Psoas iliaque (droit) | 30 | 16-psoas-droit |
-| 17 | Face antérieure | 30 | 17-anterieure |
-| 18 | Accroupi | 60 | 18-accroupi |
+| #   | Label                     | Duration | Voice slug               |
+| --- | ------------------------- | -------- | ------------------------ |
+| 1   | Flexion de hanche         | 30       | 01-flexion-hanche        |
+| 2   | Double flexion de hanche  | 30       | 02-double-flexion-hanche |
+| 3   | Pont fessier              | 30       | 03-pont-fessier          |
+| 4   | Lordose – cyphose         | 30       | 04-lordose-cyphose       |
+| 5   | Rotation lombaire         | 30       | 05-rotation              |
+| 6   | Piriforme (gauche)        | 30       | 06-piriforme-gauche      |
+| 7   | Piriforme (droit)         | 30       | 07-piriforme-droit       |
+| 8   | Carré des lombes (gauche) | 30       | 08-carre-lombes-gauche   |
+| 9   | Carré des lombes (droit)  | 30       | 09-carre-lombes-droit    |
+| 10  | Prière                    | 30       | 10-priere                |
+| 11  | Dos de chat               | 30       | 11-dos-de-chat           |
+| 12  | Gainage alterné           | 30       | 12-gainage-alterne       |
+| 13  | Extension vertébrale      | 30       | 13-extension-vertebrale  |
+| 14  | Plan postérieur           | 40       | 14-plan-posterieur       |
+| 15  | Psoas iliaque (gauche)    | 30       | 15-psoas-gauche          |
+| 16  | Psoas iliaque (droit)     | 30       | 16-psoas-droit           |
+| 17  | Face antérieure           | 30       | 17-anterieure            |
+| 18  | Accroupi                  | 60       | 18-accroupi              |
 
 `Rest` (10s) is inserted between consecutive exercises; no leading or trailing rest.
 

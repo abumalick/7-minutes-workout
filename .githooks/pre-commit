@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+set -e
+
+# Format + lint + typecheck staged files (oxfmt + oxlint via vp), auto-fixing
+# and re-staging what it touches. Reads the `staged` key from vite.config.ts.
+vp staged
+
+# Svelte-aware type check — covers .svelte files, which oxlint does not.
+pnpm exec svelte-check --tsconfig ./tsconfig.json
+
+# Full unit-test suite, run once.
+pnpm run test

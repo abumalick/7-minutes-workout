@@ -1,0 +1,76 @@
+#!/usr/bin/env sh
+set -e
+
+# Auto-deploy to Cloudflare Workers after a merge lands on main.
+# Fires on every merge in every worktree (including `git merge main` into a
+# feature branch and `git pull`), so guard hard: only the main branch deploys.
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$branch" != "main" ]; then
+  exit 0
+fi
+
+# Loud, unmissable banner on stderr. A merge to main that doesn't deploy is easy
+# to miss in the merge output, so make every "deploy did NOT run" case scream
+# (red block + terminal bell). Color degrades to plain text when stderr is not a
+# TTY. $1 = headline, $2 = body (may contain newlines).
+loud() {
+  esc=$(printf '\033')
+  if [ -t 2 ] && [ -z "${NO_COLOR:-}" ]; then
+    on="${esc}[1;97;41m"
+    off="${esc}[0m"
+  else
+    on=""
+    off=""
+  fi
+  bar="  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  "
+  {
+    printf '\a\n'
+    printf '%s\n' "${on}${bar}${off}"
+    printf '%s\n' "${on}  !!  ${1}${off}"
+    printf '%s\n' "${on}${bar}${off}"
+    printf '\n%s\n\n' "$2"
+  } >&2
+}
+
+# Freshness guard: never deploy a stale-based merge. The deploy fires on the
+# LOCAL merge, before `git push` verifies we're current with origin — so a merge
+# built on a behind main would deploy a tree that silently reverts whatever
+# advanced on origin. Fetch and refuse to deploy unless HEAD already contains
+# origin/main. (Offline: fetch fails, guard is skipped — you can't push anyway.)
+if git fetch origin main --quiet 2>/dev/null; then
+  if ! git merge-base --is-ancestor origin/main HEAD; then
+    loud "DEPLOY REFUSED — HEAD is behind origin/main (stale tree)." \
+"Deploying now would REVERT whatever advanced on origin. Integrate first, then
+re-merge and push:
+
+    git merge --ff-only origin/main
+    git merge --no-ff <your-branch>"
+    exit 0
+  fi
+fi
+
+# Skip if wrangler isn't authenticated (e.g. a fresh worktree without creds, or
+# an expired OAuth token). The merge already succeeded — we can't fail it — but
+# the deploy did NOT run, so make that impossible to overlook.
+if ! pnpm exec wrangler whoami >/dev/null 2>&1; then
+  loud "DEPLOY SKIPPED — wrangler is NOT authenticated." \
+"The merge landed on main, but workout.hilson.net was NOT deployed.
+Authenticate, then deploy manually:
+
+    pnpm exec wrangler login    # approve in the browser
+    pnpm run deploy"
+  exit 0
+fi
+
+echo "post-merge: main updated — building and deploying to Cloudflare…"
+if pnpm run deploy; then
+  echo "post-merge: deploy complete (https://workout.hilson.net)"
+else
+  status=$?
+  loud "DEPLOY FAILED (exit ${status})." \
+"The merge landed on main, but workout.hilson.net may be STALE.
+Fix the error shown above, then deploy manually:
+
+    pnpm run deploy"
+  exit "$status"
+fi

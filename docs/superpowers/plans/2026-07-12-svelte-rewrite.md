@@ -100,8 +100,8 @@ rmdir src/assets 2>/dev/null || true
 - [ ] **Step 5: Write `svelte.config.js`**
 
 ```js
-import adapter from '@sveltejs/adapter-static'
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+import adapter from "@sveltejs/adapter-static";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /** @type {import('@sveltejs/kit').Config} */
 export default {
@@ -109,23 +109,23 @@ export default {
   kit: {
     adapter: adapter(),
   },
-}
+};
 ```
 
 - [ ] **Step 6: Write `vite.config.ts`**
 
 ```ts
-import { sveltekit } from '@sveltejs/kit/vite'
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
+import { sveltekit } from "@sveltejs/kit/vite";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [tailwindcss(), sveltekit()],
   test: {
-    environment: 'jsdom',
+    environment: "jsdom",
     globals: true,
   },
-})
+});
 ```
 
 - [ ] **Step 7: Write `tsconfig.json`**
@@ -162,30 +162,30 @@ export default defineConfig({
 - [ ] **Step 9: Write `eslint.config.js`**
 
 ```js
-import js from '@eslint/js'
-import svelte from 'eslint-plugin-svelte'
-import globals from 'globals'
-import ts from 'typescript-eslint'
+import js from "@eslint/js";
+import svelte from "eslint-plugin-svelte";
+import globals from "globals";
+import ts from "typescript-eslint";
 
 export default ts.config(
   js.configs.recommended,
   ...ts.configs.recommended,
-  ...svelte.configs['flat/recommended'],
+  ...svelte.configs["flat/recommended"],
   {
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
     },
   },
   {
-    files: ['**/*.svelte'],
+    files: ["**/*.svelte"],
     languageOptions: {
       parserOptions: { parser: ts.parser },
     },
   },
   {
-    ignores: ['build/', '.svelte-kit/', 'dist/'],
+    ignores: ["build/", ".svelte-kit/", "dist/"],
   },
-)
+);
 ```
 
 - [ ] **Step 10: Overwrite `.gitignore`**
@@ -228,13 +228,13 @@ dist-ssr
 - [ ] **Step 12: Write `src/app.css`** (trimmed — dead shadcn tokens removed)
 
 ```css
-@import 'tailwindcss';
+@import "tailwindcss";
 
 body {
   margin: 0;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -243,7 +243,7 @@ body {
 - [ ] **Step 13: Write `src/routes/+layout.ts`**
 
 ```ts
-export const prerender = true
+export const prerender = true;
 ```
 
 - [ ] **Step 14: Write `src/routes/+layout.svelte`**
@@ -325,115 +325,103 @@ The heart of the app: sequence data + pure transition functions. Written test-fi
 - [ ] **Step 1: Write the failing tests** — `src/lib/workout.test.ts`
 
 ```ts
-import { describe, expect, it } from 'vitest'
-import {
-  WORKOUT_SEQUENCE,
-  isRest,
-  next,
-  prev,
-  start,
-  tick,
-  type WorkoutState,
-} from './workout'
+import { describe, expect, it } from "vitest";
+import { WORKOUT_SEQUENCE, isRest, next, prev, start, tick, type WorkoutState } from "./workout";
 
-const at = (
-  currentIndex: number,
-  timeLeft: number,
-  isRunning = true,
-): WorkoutState => ({
+const at = (currentIndex: number, timeLeft: number, isRunning = true): WorkoutState => ({
   currentIndex,
   timeLeft,
   isRunning,
-})
+});
 
-describe('sequence', () => {
-  it('has 25 steps starting with a non-Rest exercise and 10s Rests', () => {
-    expect(WORKOUT_SEQUENCE).toHaveLength(25)
-    expect(isRest(WORKOUT_SEQUENCE[0])).toBe(false)
-    expect(isRest(WORKOUT_SEQUENCE[1])).toBe(true)
-    expect(isRest(WORKOUT_SEQUENCE[24])).toBe(false)
-  })
-})
+describe("sequence", () => {
+  it("has 25 steps starting with a non-Rest exercise and 10s Rests", () => {
+    expect(WORKOUT_SEQUENCE).toHaveLength(25);
+    expect(isRest(WORKOUT_SEQUENCE[0])).toBe(false);
+    expect(isRest(WORKOUT_SEQUENCE[1])).toBe(true);
+    expect(isRest(WORKOUT_SEQUENCE[24])).toBe(false);
+  });
+});
 
-describe('tick', () => {
-  it('counts down without cues above the last 5 seconds', () => {
-    expect(tick(at(0, 30))).toEqual({ state: at(0, 29), cues: [] })
-    expect(tick(at(0, 6))).toEqual({ state: at(0, 5), cues: [] })
-  })
+describe("tick", () => {
+  it("counts down without cues above the last 5 seconds", () => {
+    expect(tick(at(0, 30))).toEqual({ state: at(0, 29), cues: [] });
+    expect(tick(at(0, 6))).toEqual({ state: at(0, 5), cues: [] });
+  });
 
-  it('emits a tick cue for each of the last 5 seconds', () => {
-    expect(tick(at(0, 5))).toEqual({ state: at(0, 4), cues: ['tick'] })
-    expect(tick(at(0, 1))).toEqual({ state: at(0, 0), cues: ['tick'] })
-  })
+  it("emits a tick cue for each of the last 5 seconds", () => {
+    expect(tick(at(0, 5))).toEqual({ state: at(0, 4), cues: ["tick"] });
+    expect(tick(at(0, 1))).toEqual({ state: at(0, 0), cues: ["tick"] });
+  });
 
-  it('advances exercise -> rest with a success cue only', () => {
-    expect(tick(at(0, 0))).toEqual({ state: at(1, 10), cues: ['success'] })
-  })
+  it("advances exercise -> rest with a success cue only", () => {
+    expect(tick(at(0, 0))).toEqual({ state: at(1, 10), cues: ["success"] });
+  });
 
-  it('advances rest -> exercise with a start cue only', () => {
-    expect(tick(at(1, 0))).toEqual({ state: at(2, 30), cues: ['start'] })
-  })
+  it("advances rest -> exercise with a start cue only", () => {
+    expect(tick(at(1, 0))).toEqual({ state: at(2, 30), cues: ["start"] });
+  });
 
-  it('wraps after the last step, stops running, emits success then start', () => {
+  it("wraps after the last step, stops running, emits success then start", () => {
     expect(tick(at(24, 0))).toEqual({
       state: at(0, 30, false),
-      cues: ['success', 'start'],
-    })
-  })
-})
+      cues: ["success", "start"],
+    });
+  });
+});
 
-describe('start', () => {
-  it('starts running and cues start at the beginning of an exercise', () => {
+describe("start", () => {
+  it("starts running and cues start at the beginning of an exercise", () => {
     expect(start(at(0, 30, false))).toEqual({
       state: at(0, 30, true),
-      cues: ['start'],
-    })
-  })
+      cues: ["start"],
+    });
+  });
 
-  it('starts running with no cue mid-exercise', () => {
+  it("starts running with no cue mid-exercise", () => {
     expect(start(at(0, 20, false))).toEqual({
       state: at(0, 20, true),
       cues: [],
-    })
-  })
+    });
+  });
 
-  it('starts running with no cue on a Rest step', () => {
+  it("starts running with no cue on a Rest step", () => {
     expect(start(at(1, 10, false))).toEqual({
       state: at(1, 10, true),
       cues: [],
-    })
-  })
-})
+    });
+  });
+});
 
-describe('next', () => {
-  it('leaves an active exercise with success, enters Rest with no start', () => {
-    expect(next(at(0, 30))).toEqual({ state: at(1, 10), cues: ['success'] })
-  })
+describe("next", () => {
+  it("leaves an active exercise with success, enters Rest with no start", () => {
+    expect(next(at(0, 30))).toEqual({ state: at(1, 10), cues: ["success"] });
+  });
 
-  it('leaves Rest with no success, enters exercise with start', () => {
-    expect(next(at(1, 10))).toEqual({ state: at(2, 30), cues: ['start'] })
-  })
+  it("leaves Rest with no success, enters exercise with start", () => {
+    expect(next(at(1, 10))).toEqual({ state: at(2, 30), cues: ["start"] });
+  });
 
-  it('wraps to the first step and preserves isRunning', () => {
+  it("wraps to the first step and preserves isRunning", () => {
     expect(next(at(24, 30, false))).toEqual({
       state: at(0, 30, false),
-      cues: ['start'],
-    })
-  })
-})
+      cues: ["start"],
+    });
+  });
+});
 
-describe('prev', () => {
-  it('wraps backward from the first step, success then start', () => {
+describe("prev", () => {
+  it("wraps backward from the first step, success then start", () => {
     expect(prev(at(0, 30))).toEqual({
       state: at(24, 30),
-      cues: ['success', 'start'],
-    })
-  })
+      cues: ["success", "start"],
+    });
+  });
 
-  it('leaves an active exercise with success, enters Rest with no start', () => {
-    expect(prev(at(2, 30))).toEqual({ state: at(1, 10), cues: ['success'] })
-  })
-})
+  it("leaves an active exercise with success, enters Rest with no start", () => {
+    expect(prev(at(2, 30))).toEqual({ state: at(1, 10), cues: ["success"] });
+  });
+});
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -444,72 +432,66 @@ Expected: FAIL — cannot resolve `./workout`.
 - [ ] **Step 3: Implement `src/lib/workout.ts`**
 
 ```ts
-export type WorkoutStep = { label: string; duration: number }
+export type WorkoutStep = { label: string; duration: number };
 export type WorkoutState = {
-  currentIndex: number
-  timeLeft: number
-  isRunning: boolean
-}
-export type Cue = 'start' | 'tick' | 'success'
-export type Transition = { state: WorkoutState; cues: Cue[] }
+  currentIndex: number;
+  timeLeft: number;
+  isRunning: boolean;
+};
+export type Cue = "start" | "tick" | "success";
+export type Transition = { state: WorkoutState; cues: Cue[] };
 
-const REST = 'Rest'
+const REST = "Rest";
 
 export const WORKOUT_SEQUENCE: WorkoutStep[] = [
-  { label: 'Jumping Jacks', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Wall Sit', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Push-ups', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Abdominal Crunch', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Step-up onto Chair', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Squats', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Triceps Dip on Chair', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Plank', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'High Knees Running in Place', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Lunges', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Push-up and Rotation', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Side Plank (Left)', duration: 30 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Side Plank (Right)', duration: 30 },
-]
+  { label: "Jumping Jacks", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Wall Sit", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Push-ups", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Abdominal Crunch", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Step-up onto Chair", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Squats", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Triceps Dip on Chair", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Plank", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "High Knees Running in Place", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Lunges", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Push-up and Rotation", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Side Plank (Left)", duration: 30 },
+  { label: "Rest", duration: 10 },
+  { label: "Side Plank (Right)", duration: 30 },
+];
 
-export const isRest = (step: { label: string }): boolean => step.label === REST
+export const isRest = (step: { label: string }): boolean => step.label === REST;
 
-const advance = (i: number): number => (i + 1) % WORKOUT_SEQUENCE.length
-const retreat = (i: number): number =>
-  (i - 1 + WORKOUT_SEQUENCE.length) % WORKOUT_SEQUENCE.length
+const advance = (i: number): number => (i + 1) % WORKOUT_SEQUENCE.length;
+const retreat = (i: number): number => (i - 1 + WORKOUT_SEQUENCE.length) % WORKOUT_SEQUENCE.length;
 
 // Cues fired when moving off `fromIndex` onto `toIndex`.
 // Leaving an active exercise -> success; entering an exercise -> start. Rest emits neither.
-const stepCues = (
-  fromIndex: number,
-  toIndex: number,
-  leavingActive: boolean,
-): Cue[] => {
-  const cues: Cue[] = []
-  if (leavingActive && !isRest(WORKOUT_SEQUENCE[fromIndex]))
-    cues.push('success')
-  if (!isRest(WORKOUT_SEQUENCE[toIndex])) cues.push('start')
-  return cues
-}
+const stepCues = (fromIndex: number, toIndex: number, leavingActive: boolean): Cue[] => {
+  const cues: Cue[] = [];
+  if (leavingActive && !isRest(WORKOUT_SEQUENCE[fromIndex])) cues.push("success");
+  if (!isRest(WORKOUT_SEQUENCE[toIndex])) cues.push("start");
+  return cues;
+};
 
 export function tick(s: WorkoutState): Transition {
   if (s.timeLeft > 0) {
-    const cues: Cue[] = s.timeLeft <= 5 ? ['tick'] : []
-    return { state: { ...s, timeLeft: s.timeLeft - 1 }, cues }
+    const cues: Cue[] = s.timeLeft <= 5 ? ["tick"] : [];
+    return { state: { ...s, timeLeft: s.timeLeft - 1 }, cues };
   }
-  const toIndex = advance(s.currentIndex)
-  const completed = s.currentIndex === WORKOUT_SEQUENCE.length - 1
+  const toIndex = advance(s.currentIndex);
+  const completed = s.currentIndex === WORKOUT_SEQUENCE.length - 1;
   return {
     state: {
       currentIndex: toIndex,
@@ -517,14 +499,13 @@ export function tick(s: WorkoutState): Transition {
       isRunning: completed ? false : s.isRunning,
     },
     cues: stepCues(s.currentIndex, toIndex, true),
-  }
+  };
 }
 
 export function start(s: WorkoutState): Transition {
-  const atStepStart = s.timeLeft === WORKOUT_SEQUENCE[s.currentIndex].duration
-  const cues: Cue[] =
-    !isRest(WORKOUT_SEQUENCE[s.currentIndex]) && atStepStart ? ['start'] : []
-  return { state: { ...s, isRunning: true }, cues }
+  const atStepStart = s.timeLeft === WORKOUT_SEQUENCE[s.currentIndex].duration;
+  const cues: Cue[] = !isRest(WORKOUT_SEQUENCE[s.currentIndex]) && atStepStart ? ["start"] : [];
+  return { state: { ...s, isRunning: true }, cues };
 }
 
 function skip(s: WorkoutState, toIndex: number): Transition {
@@ -535,15 +516,15 @@ function skip(s: WorkoutState, toIndex: number): Transition {
       timeLeft: WORKOUT_SEQUENCE[toIndex].duration,
     },
     cues: stepCues(s.currentIndex, toIndex, s.timeLeft > 0),
-  }
+  };
 }
 
 export function next(s: WorkoutState): Transition {
-  return skip(s, advance(s.currentIndex))
+  return skip(s, advance(s.currentIndex));
 }
 
 export function prev(s: WorkoutState): Transition {
-  return skip(s, retreat(s.currentIndex))
+  return skip(s, retreat(s.currentIndex));
 }
 ```
 
@@ -580,26 +561,24 @@ Build the thin Svelte shell around the tested core and verify behavior in a brow
 - [ ] **Step 1: Write `src/lib/sounds.ts`**
 
 ```ts
-import { browser } from '$app/environment'
-import startUrl from './assets/sounds/start.mp3'
-import successUrl from './assets/sounds/success.mp3'
-import tickUrl from './assets/sounds/tick.mp3'
-import type { Cue } from './workout'
+import { browser } from "$app/environment";
+import startUrl from "./assets/sounds/start.mp3";
+import successUrl from "./assets/sounds/success.mp3";
+import tickUrl from "./assets/sounds/tick.mp3";
+import type { Cue } from "./workout";
 
 const urls: Record<Cue, string> = {
   start: startUrl,
   tick: tickUrl,
   success: successUrl,
-}
-const cache: Partial<Record<Cue, HTMLAudioElement>> = {}
+};
+const cache: Partial<Record<Cue, HTMLAudioElement>> = {};
 
 export function play(cue: Cue): void {
-  if (!browser) return
-  const audio = (cache[cue] ??= new Audio(urls[cue]))
-  audio.currentTime = 0
-  audio
-    .play()
-    .catch((error) => console.error(`Error playing ${cue} sound:`, error))
+  if (!browser) return;
+  const audio = (cache[cue] ??= new Audio(urls[cue]));
+  audio.currentTime = 0;
+  audio.play().catch((error) => console.error(`Error playing ${cue} sound:`, error));
 }
 ```
 

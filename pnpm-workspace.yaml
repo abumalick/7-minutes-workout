@@ -1,0 +1,7 @@
+# Explicit build-script decisions so `pnpm install` doesn't exit non-zero on
+# undecided lifecycle scripts (which would break the commit/deploy hooks).
+# workerd's build is only needed for `wrangler dev`; we deploy, so skip it.
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: false

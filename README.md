@@ -7,26 +7,28 @@ start/pause/next/previous controls, and audio cues.
 ## Getting started
 
 ```bash
-bun install
-bun run dev        # dev server on http://localhost:3000
+mise trust         # once, to allow the pinned toolchain
+pnpm install
+pnpm dev           # dev server on http://localhost:3000
 ```
 
 ## Commands
 
-- `bun run dev` / `bun run start` — dev server on port 3000
-- `bun run build` — static production build (prerendered via `adapter-static`)
-- `bun run serve` — preview the production build
-- `bun run test` — run the Vitest suite once
-- `bun run test -- <path>` — run a single test file (e.g. `bun run test -- src/lib/workout.test.ts`)
-- `bun run lint` — ESLint + `svelte-check`
-- `bun run format` — Prettier (with `prettier-plugin-svelte`)
+- `pnpm dev` / `pnpm start` — dev server on port 3000
+- `pnpm run build` — static production build (prerendered via `adapter-static`)
+- `pnpm run serve` — preview the production build
+- `pnpm test` — run the Vitest suite once
+- `pnpm test <path>` — run a single test file (e.g. `pnpm test src/lib/workout.test.ts`)
+- `pnpm run lint` — oxlint (`vp lint`) + `svelte-check`
+- `pnpm run format` — `vp fmt` (oxfmt)
+- `pnpm run deploy` — build + deploy to Cloudflare (`workout.hilson.net`)
 
 ## Stack
 
 - [SvelteKit](https://svelte.dev/docs/kit) with [Svelte 5](https://svelte.dev/docs/svelte) runes
 - [Vite](https://vitejs.dev/) + [Tailwind CSS v4](https://tailwindcss.com/) (`@tailwindcss/vite`)
 - TypeScript (strict), [Vitest](https://vitest.dev/)
-- ESLint (flat config) + Prettier, bun as the package manager
+- [vite-plus](https://www.npmjs.com/package/vite-plus) (`vp` — oxfmt + oxlint), pnpm as the package manager, deployed as a Cloudflare Worker
 
 ## How it works
 

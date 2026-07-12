@@ -124,7 +124,7 @@ Mirrors the existing `voice` pattern exactly.
   and attach per exercise by slug with an `imageFor(slug)` helper shaped like
   `voiceFor`.
 - **`src/routes/+page.svelte`** — pass the current step's `image` to `WorkoutPanel`;
-  during a `Rest` step pass the *next* step's image (pairs with the existing "Up
+  during a `Rest` step pass the _next_ step's image (pairs with the existing "Up
   next" label).
 - **`src/lib/WorkoutPanel.svelte`** — add an optional `image?` prop; render it above
   the timer (`<img>`, sized responsively, empty `alt` — decorative).

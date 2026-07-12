@@ -101,7 +101,7 @@ Lazily constructs the three `Audio` objects on first use, guarded by SvelteKit's
 
 ## Tooling changes
 
-**Remove:** react, react-dom, @tanstack/* , @vitejs/plugin-react, lucide-react,
+**Remove:** react, react-dom, @tanstack/\* , @vitejs/plugin-react, lucide-react,
 Biome + `biome.json`, class-variance-authority, clsx, tailwind-merge,
 tailwindcss-animate, `src/lib/utils.ts`, `routeTree.gen.ts`, `main.tsx`,
 `reportWebVitals.ts`, `.cursorrules`, `index.html`, `public/` (contents moved to
