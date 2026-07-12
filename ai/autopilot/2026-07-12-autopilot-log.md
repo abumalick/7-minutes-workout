@@ -9,3 +9,4 @@
 - [08:03] Instruction text home — options: inline in workouts.ts / shared back-pain-instructions.ts — chose: shared module — why: single source of truth for both generator script and workout definition
 - [08:07] BLOCKER (escalated) — ElevenLabs key lacks text_to_speech/voices_read/user_read scopes — cannot generate audio; Tasks 4 (wiring) blocked pending a properly-scoped key. Not a craft decision: external credential.
 - [08:20] Voice selection — options: native French library voice (Enrick) / English-accented premade — chose: premade 'Daniel - Steady Broadcaster' (onwK4e9ZLuTAKqWW03F9) — why: free plan blocks library voices via API; premade works now, swappable via ELEVENLABS_VOICE_ID re-run if user upgrades
+- [08:26] Feature complete — all 5 tasks committed; tests/lint/build green; browser-verified voice playback. Integration (merge/PR) left to user.
