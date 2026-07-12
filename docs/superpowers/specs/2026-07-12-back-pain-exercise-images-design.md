@@ -11,13 +11,26 @@ web UI (using the user's subscription), saved into the repo, and displayed in
 
 ## Why this approach
 
-- Codex CLI here is authenticated with a **ChatGPT subscription only** (no OpenAI
-  API key), so it cannot generate image files programmatically. The ChatGPT web UI
-  can, so generation is a manual copy-paste step; the repo integration is code.
+- Generation is automated by **`scripts/generate-images.ts`** (run with `bun`),
+  which calls the OpenAI `gpt-image-1` API and writes
+  `src/lib/assets/images/back-pain/<slug>.png`. It skips existing files unless
+  `--force`, accepts slug filters for one-offs, and retries each image (output-stage
+  moderation occasionally false-flags floor/stretch poses as "sexual", so prompts
+  are framed as a clinical, non-suggestive exercise diagram). The script — not the
+  copy-paste doc — is the source of truth for the prompts.
+  (The earlier plan routed prompts through the ChatGPT web UI because codex here is
+  ChatGPT-subscription-only; we switched to the API once a key was available.)
 - Poses are grounded in the source routine video
   (`https://youtu.be/o-Yawof_CgE`, chapters map 1:1 to the exercises). Frames were
   used only as private reference to write accurate pose descriptions — **no real
   photo ships** in the app.
+- 512×512 transparent PNGs (~1.3 MB total for all 19), sized at 2× the max on-screen
+  display.
+
+## Exercise count
+
+19, not 18: the hip flexion is split into left (`01-flexion-hanche`) and right
+(`01b-flexion-hanche-droit`).
 
 ## Visual style
 
