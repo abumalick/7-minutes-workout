@@ -1,7 +1,7 @@
 <script lang="ts">
   import WorkoutPanel from '$lib/WorkoutPanel.svelte'
   import WorkoutPicker from '$lib/WorkoutPicker.svelte'
-  import { play } from '$lib/sounds'
+  import { play, playVoice } from '$lib/sounds'
   import {
     isRest,
     next,
@@ -43,7 +43,11 @@
     currentIndex = state.currentIndex
     timeLeft = state.timeLeft
     isRunning = state.isRunning
-    for (const cue of cues) play(cue)
+    const step = selected?.steps[currentIndex]
+    for (const cue of cues) {
+      if (cue === 'start' && step?.voice) playVoice(step.voice)
+      else play(cue)
+    }
   }
 
   // Only `isRunning`/`selected` are read synchronously, so the interval is

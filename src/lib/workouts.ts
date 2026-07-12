@@ -1,4 +1,5 @@
-import type { Workout } from './workout'
+import type { Workout, WorkoutStep } from './workout'
+import { backPainInstructions } from './back-pain-instructions'
 
 export const sevenMinuteWorkout: Workout = {
   id: 'seven-minute',
@@ -32,4 +33,32 @@ export const sevenMinuteWorkout: Workout = {
   ],
 }
 
-export const WORKOUTS: Workout[] = [sevenMinuteWorkout]
+const voiceUrls = import.meta.glob('./assets/voice/back-pain/*.mp3', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>
+
+const voiceFor = (slug: string): string => {
+  const entry = Object.entries(voiceUrls).find(([path]) =>
+    path.endsWith(`/${slug}.mp3`),
+  )
+  if (!entry) throw new Error(`Missing voice audio for ${slug}`)
+  return entry[1]
+}
+
+const backPainExercises: WorkoutStep[] = backPainInstructions.map((ex) => ({
+  label: ex.label,
+  duration: ex.duration,
+  voice: voiceFor(ex.slug),
+}))
+
+export const backPainWorkout: Workout = {
+  id: 'back-pain',
+  name: 'Routine mal de dos',
+  steps: backPainExercises.flatMap((step, i) =>
+    i === 0 ? [step] : [{ label: 'Rest', duration: 10 }, step],
+  ),
+}
+
+export const WORKOUTS: Workout[] = [sevenMinuteWorkout, backPainWorkout]

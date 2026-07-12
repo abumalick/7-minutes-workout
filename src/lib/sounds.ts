@@ -19,3 +19,17 @@ export function play(cue: Cue): void {
     .play()
     .catch((error) => console.error(`Error playing ${cue} sound:`, error))
 }
+
+let currentVoice: HTMLAudioElement | null = null
+
+export function playVoice(url: string): void {
+  if (!browser) return
+  if (currentVoice) {
+    currentVoice.pause()
+    currentVoice.currentTime = 0
+  }
+  currentVoice = new Audio(url)
+  currentVoice
+    .play()
+    .catch((error) => console.error('Error playing voice:', error))
+}
