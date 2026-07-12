@@ -67,13 +67,13 @@ const poses: Pose[] = [
     slug: "06-piriforme-gauche",
     accent: "the left gluteal region",
     view: "side profile",
-    pose: "lying on the back, head down; the right thigh raised toward the chest with the right knee bent and the right foot lifted off the floor; the left ankle crossed and resting on top of the right thigh just above the knee, the bent left knee splayed open out to the side so the two legs clearly form the shape of a number 4; both hands reaching around behind the right thigh to draw it toward the chest.",
+    pose: "lying on the back, head down; the right thigh raised toward the chest with the right knee bent and the right foot off the floor; the left ankle crossed on top of the right thigh just above the knee, the bent left knee splayed open to the side so the two legs form the shape of a number 4; the left arm threaded through the gap between the two legs and the right arm passing around the outside, both hands clasping together behind the right thigh (gripping the back of the thigh) to pull it toward the chest — the arms wrap around the BACK of the thigh and must never rest on top of the leg.",
   },
   {
     slug: "07-piriforme-droit",
     accent: "the right gluteal region",
     view: "side profile",
-    pose: "lying on the back, head down; the left thigh raised toward the chest with the left knee bent and the left foot lifted off the floor; the right ankle crossed and resting on top of the left thigh just above the knee, the bent right knee splayed open out to the side so the two legs clearly form the shape of a number 4; both hands reaching around behind the left thigh to draw it toward the chest.",
+    pose: "lying on the back, head down; the left thigh raised toward the chest with the left knee bent and the left foot off the floor; the right ankle crossed on top of the left thigh just above the knee, the bent right knee splayed open to the side so the two legs form the shape of a number 4; the right arm threaded through the gap between the two legs and the left arm passing around the outside, both hands clasping together behind the left thigh (gripping the back of the thigh) to pull it toward the chest — the arms wrap around the BACK of the thigh and must never rest on top of the leg.",
   },
   {
     slug: "08-carre-lombes-gauche",
