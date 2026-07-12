@@ -1,19 +1,27 @@
 import { existsSync, mkdirSync } from "node:fs";
-import { backPainInstructions } from "../src/lib/back-pain-instructions";
+import { writeFile } from "node:fs/promises";
+import type { ExerciseInstruction } from "../src/lib/exercise.ts";
 
+const id = process.argv[2];
+if (!id || id.startsWith("--")) {
+  console.error("Usage: node scripts/generate-voice.ts <workout-id> [--force] [slug...]");
+  process.exit(1);
+}
 const KEY = process.env.ELEVENLABS_API_KEY;
 if (!KEY) {
   console.error("Set ELEVENLABS_API_KEY");
   process.exit(1);
 }
-const VOICE_ID = process.env.ELEVENLABS_VOICE_ID;
-if (!VOICE_ID) {
-  console.error("Set ELEVENLABS_VOICE_ID (a calm French male voice)");
-  process.exit(1);
-}
+const VOICE_ID = process.env.ELEVENLABS_VOICE_ID ?? "onwK4e9ZLuTAKqWW03F9";
 const MODEL = "eleven_multilingual_v2";
 const force = process.argv.includes("--force");
-const outDir = "src/lib/assets/voice/back-pain";
+const only = process.argv.slice(3).filter((a) => !a.startsWith("--"));
+
+const { instructions } = (await import(`../src/lib/${id}-instructions.ts`)) as {
+  instructions: ExerciseInstruction[];
+};
+
+const outDir = `src/lib/assets/voice/${id}`;
 mkdirSync(outDir, { recursive: true });
 
 // Announce the movement name, then the explanation. Parentheses are stripped so
@@ -21,7 +29,8 @@ mkdirSync(outDir, { recursive: true });
 const spokenName = (label: string): string =>
   label.replace(/[()]/g, "").replace(/\s+/g, " ").trim();
 
-for (const { slug, label, text } of backPainInstructions) {
+for (const { slug, label, text } of instructions) {
+  if (only.length && !only.includes(slug)) continue;
   const out = `${outDir}/${slug}.mp3`;
   if (existsSync(out) && !force) {
     console.log("skip", slug);
@@ -45,7 +54,7 @@ for (const { slug, label, text } of backPainInstructions) {
     console.error("FAIL", slug, res.status, await res.text());
     process.exit(1);
   }
-  await Bun.write(out, await res.arrayBuffer());
+  await writeFile(out, Buffer.from(await res.arrayBuffer()));
   console.log("wrote", out);
 }
 console.log("done");
