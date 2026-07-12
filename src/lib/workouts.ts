@@ -47,10 +47,25 @@ const voiceFor = (slug: string): string => {
   return entry[1]
 }
 
+const imageUrls = import.meta.glob('./assets/images/back-pain/*.png', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>
+
+const imageFor = (slug: string): string => {
+  const entry = Object.entries(imageUrls).find(([path]) =>
+    path.endsWith(`/${slug}.png`),
+  )
+  if (!entry) throw new Error(`Missing image for ${slug}`)
+  return entry[1]
+}
+
 const backPainExercises: WorkoutStep[] = backPainInstructions.map((ex) => ({
   label: ex.label,
   duration: ex.duration,
   voice: voiceFor(ex.slug),
+  image: imageFor(ex.slug),
 }))
 
 export const backPainWorkout: Workout = {

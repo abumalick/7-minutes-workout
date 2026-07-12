@@ -74,8 +74,11 @@ describe('start', () => {
 })
 
 describe('next', () => {
-  it('leaves an active exercise with success, enters Rest with no start', () => {
-    expect(next(S, at(0, 30))).toEqual({ state: at(1, 10), cues: ['success'] })
+  it('skips Rest to the next exercise, success leaving and start entering', () => {
+    expect(next(S, at(0, 30))).toEqual({
+      state: at(2, 30),
+      cues: ['success', 'start'],
+    })
   })
 
   it('leaves Rest with no success, enters exercise with start', () => {
@@ -98,7 +101,10 @@ describe('prev', () => {
     })
   })
 
-  it('leaves an active exercise with success, enters Rest with no start', () => {
-    expect(prev(S, at(2, 30))).toEqual({ state: at(1, 10), cues: ['success'] })
+  it('skips Rest to the previous exercise, success leaving and start entering', () => {
+    expect(prev(S, at(2, 30))).toEqual({
+      state: at(0, 30),
+      cues: ['success', 'start'],
+    })
   })
 })

@@ -12,6 +12,13 @@ describe('backPainWorkout', () => {
     }
   })
 
+  it('gives every exercise an image and no rest an image', () => {
+    for (const step of steps) {
+      if (isRest(step)) expect(step.image).toBeUndefined()
+      else expect(typeof step.image).toBe('string')
+    }
+  })
+
   it('starts and ends on an exercise with 10s rests only between exercises', () => {
     expect(isRest(steps[0])).toBe(false)
     expect(isRest(steps[steps.length - 1])).toBe(false)
@@ -24,7 +31,7 @@ describe('backPainWorkout', () => {
     })
   })
 
-  it('has 18 exercises', () => {
-    expect(steps.filter((s) => !isRest(s))).toHaveLength(18)
+  it('has 19 exercises', () => {
+    expect(steps.filter((s) => !isRest(s))).toHaveLength(19)
   })
 })

@@ -1,4 +1,9 @@
-export type WorkoutStep = { label: string; duration: number; voice?: string }
+export type WorkoutStep = {
+  label: string
+  duration: number
+  voice?: string
+  image?: string
+}
 export type Workout = { id: string; name: string; steps: WorkoutStep[] }
 export type WorkoutState = {
   currentIndex: number
@@ -16,6 +21,18 @@ const advance = (steps: WorkoutStep[], i: number): number =>
   (i + 1) % steps.length
 const retreat = (steps: WorkoutStep[], i: number): number =>
   (i - 1 + steps.length) % steps.length
+
+// Manual skip lands on the next/previous exercise, hopping over any Rest steps.
+const nextExercise = (steps: WorkoutStep[], i: number): number => {
+  let j = advance(steps, i)
+  while (isRest(steps[j]) && j !== i) j = advance(steps, j)
+  return j
+}
+const prevExercise = (steps: WorkoutStep[], i: number): number => {
+  let j = retreat(steps, i)
+  while (isRest(steps[j]) && j !== i) j = retreat(steps, j)
+  return j
+}
 
 // Cues fired when moving off `fromIndex` onto `toIndex`.
 // Leaving an active exercise -> success; entering an exercise -> start. Rest emits neither.
@@ -71,9 +88,9 @@ function skip(
 }
 
 export function next(steps: WorkoutStep[], s: WorkoutState): Transition {
-  return skip(steps, s, advance(steps, s.currentIndex))
+  return skip(steps, s, nextExercise(steps, s.currentIndex))
 }
 
 export function prev(steps: WorkoutStep[], s: WorkoutState): Transition {
-  return skip(steps, s, retreat(steps, s.currentIndex))
+  return skip(steps, s, prevExercise(steps, s.currentIndex))
 }

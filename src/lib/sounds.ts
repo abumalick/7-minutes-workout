@@ -11,6 +11,32 @@ const urls: Record<Cue, string> = {
 }
 const cache: Partial<Record<Cue, HTMLAudioElement>> = {}
 
+// One reused element for spoken instructions. Mobile browsers only let a media
+// element play from a timer if that same element was first started during a
+// user gesture — so we keep a single element (unlocked on the Start tap) rather
+// than creating a fresh, blocked `Audio` per instruction.
+let voiceEl: HTMLAudioElement | null = null
+const getVoiceEl = (): HTMLAudioElement => (voiceEl ??= new Audio())
+
+// Must run inside the Start-button gesture: briefly plays then pauses every
+// audio element so the later timer-driven cues (tick/success/voice) are allowed
+// to play on mobile, where audio is otherwise locked until a user interaction.
+export function unlockAudio(): void {
+  if (!browser) return
+  const elements: HTMLAudioElement[] = [
+    ...(Object.keys(urls) as Cue[]).map((cue) => (cache[cue] ??= new Audio(urls[cue]))),
+    getVoiceEl(),
+  ]
+  for (const el of elements) {
+    el.play()
+      .then(() => {
+        el.pause()
+        el.currentTime = 0
+      })
+      .catch(() => {})
+  }
+}
+
 export function play(cue: Cue): void {
   if (!browser) return
   const audio = (cache[cue] ??= new Audio(urls[cue]))
@@ -20,16 +46,13 @@ export function play(cue: Cue): void {
     .catch((error) => console.error(`Error playing ${cue} sound:`, error))
 }
 
-let currentVoice: HTMLAudioElement | null = null
-
 export function playVoice(url: string): void {
   if (!browser) return
-  if (currentVoice) {
-    currentVoice.pause()
-    currentVoice.currentTime = 0
-  }
-  currentVoice = new Audio(url)
-  currentVoice
+  const audio = getVoiceEl()
+  audio.pause()
+  audio.src = url
+  audio.currentTime = 0
+  audio
     .play()
     .catch((error) => console.error('Error playing voice:', error))
 }

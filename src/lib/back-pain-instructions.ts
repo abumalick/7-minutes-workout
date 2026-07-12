@@ -8,7 +8,13 @@ export type ExerciseInstruction = {
 export const backPainInstructions: ExerciseInstruction[] = [
   {
     slug: '01-flexion-hanche',
-    label: 'Flexion de hanche',
+    label: 'Flexion de hanche (gauche)',
+    duration: 30,
+    text: 'Allongé sur le dos, ramenez un genou vers la poitrine pour assouplir la hanche et le bas du dos, en respirant lentement.',
+  },
+  {
+    slug: '01b-flexion-hanche-droit',
+    label: 'Flexion de hanche (droite)',
     duration: 30,
     text: 'Allongé sur le dos, ramenez un genou vers la poitrine pour assouplir la hanche et le bas du dos, en respirant lentement.',
   },

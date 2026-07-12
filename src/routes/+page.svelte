@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { browser } from '$app/environment'
   import WorkoutPanel from '$lib/WorkoutPanel.svelte'
   import WorkoutPicker from '$lib/WorkoutPicker.svelte'
-  import { play, playVoice } from '$lib/sounds'
+  import { play, playVoice, unlockAudio } from '$lib/sounds'
+  import { releaseWakeLock, requestWakeLock } from '$lib/wake-lock'
   import {
     isRest,
     next,
@@ -33,10 +35,17 @@
   }
 
   const currentStep = $derived(selected ? selected.steps[currentIndex] : null)
-  const nextLabel = $derived(
-    selected
-      ? selected.steps[(currentIndex + 1) % selected.steps.length].label
-      : '',
+  const nextStep = $derived(
+    selected ? selected.steps[(currentIndex + 1) % selected.steps.length] : null,
+  )
+  const nextLabel = $derived(nextStep?.label ?? '')
+  // Show the current exercise's image; during a rest, preview the next one's.
+  const panelImage = $derived(
+    currentStep
+      ? isRest(currentStep)
+        ? nextStep?.image
+        : currentStep.image
+      : undefined,
   )
 
   function apply({ state, cues }: Transition) {
@@ -60,6 +69,21 @@
       1000,
     )
     return () => clearInterval(id)
+  })
+
+  // Keep the screen on while running; re-acquire when returning to the tab
+  // since the browser drops the lock whenever the page is hidden.
+  $effect(() => {
+    if (!browser || !isRunning) return
+    requestWakeLock()
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') requestWakeLock()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible)
+      releaseWakeLock()
+    }
   })
 </script>
 
@@ -88,9 +112,15 @@
         {timeLeft}
         {isRunning}
         nextWorkoutLabel={isRest(currentStep) ? nextLabel : undefined}
-        onStart={() =>
-          apply(start(selected.steps, { currentIndex, timeLeft, isRunning }))}
+        image={panelImage}
+        onStart={() => {
+          unlockAudio()
+          apply(start(selected.steps, { currentIndex, timeLeft, isRunning }))
+        }}
         onPause={() => (isRunning = false)}
+        onReplay={currentStep.voice
+          ? () => playVoice(currentStep.voice!)
+          : undefined}
         onNext={() =>
           apply(next(selected.steps, { currentIndex, timeLeft, isRunning }))}
         onPrevious={() =>

@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "my-workout",
+  "account_id": "9ab550becc556ce60d4250bfdc48224c",
+  "compatibility_date": "2026-07-01",
+  "assets": {
+    "directory": "./build"
+  },
+  "routes": [{ "pattern": "workout.hilson.net", "custom_domain": true }]
+}

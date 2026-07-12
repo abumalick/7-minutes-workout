@@ -5,12 +5,14 @@
     onPause,
     onNext,
     onPrevious,
+    onReplay,
   }: {
     isRunning: boolean
     onStart: () => void
     onPause: () => void
     onNext: () => void
     onPrevious: () => void
+    onReplay?: () => void
   } = $props()
 </script>
 
@@ -82,4 +84,27 @@
       <line x1="19" x2="19" y1="5" y2="19" />
     </svg>
   </button>
+  {#if onReplay}
+    <button
+      type="button"
+      onclick={onReplay}
+      class="p-3 bg-gray-300 rounded-full hover:bg-gray-400"
+      aria-label="Replay instruction"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="1 4 1 10 7 10" />
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+      </svg>
+    </button>
+  {/if}
 </div>
