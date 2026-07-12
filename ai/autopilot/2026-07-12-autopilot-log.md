@@ -11,3 +11,4 @@
 - [08:20] Voice selection — options: native French library voice (Enrick) / English-accented premade — chose: premade 'Daniel - Steady Broadcaster' (onwK4e9ZLuTAKqWW03F9) — why: free plan blocks library voices via API; premade works now, swappable via ELEVENLABS_VOICE_ID re-run if user upgrades
 - [08:26] Feature complete — all 5 tasks committed; tests/lint/build green; browser-verified voice playback. Integration (merge/PR) left to user.
 - [08:33] Dev URL serving — mirror h2/ad3iya portless pattern — added scripts/dev-server.sh (env-strip + IPv4 bind + PORTLESS_STATE_DIR=~/.portless-dev), portless base name 'my-workout' (package.json), Vite allowedHosts '.dev.sageplex.com' (Vite 6 host check; ad3iya on Vite 8 didn't need it) — live at https://my-workout.dev.sageplex.com
+- [08:40] Voice UX — prepend movement name before explanation; strip parentheses for natural speech; regenerated 18 clips; STT-verified name is announced.
