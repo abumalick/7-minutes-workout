@@ -2,7 +2,7 @@
   import { browser } from '$app/environment'
   import WorkoutPanel from '$lib/WorkoutPanel.svelte'
   import WorkoutPicker from '$lib/WorkoutPicker.svelte'
-  import { play, playVoice, unlockAudio } from '$lib/sounds'
+  import { play, playVoice, preload, unlockAudio } from '$lib/sounds'
   import { releaseWakeLock, requestWakeLock } from '$lib/wake-lock'
   import {
     isRest,
@@ -27,6 +27,15 @@
     currentIndex = 0
     timeLeft = workout.steps[0].duration
     isRunning = false
+    // Decode every spoken clip up front so the countdown and rest previews play
+    // instantly from the timer.
+    const voices = workout.steps
+      .map((s) => s.voice)
+      .filter((v): v is string => Boolean(v))
+    const cues = workout.cues
+      ? [workout.cues.go, ...Object.values(workout.cues.countdown)]
+      : []
+    preload([...new Set([...voices, ...cues])])
   }
 
   function backToPicker() {

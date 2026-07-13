@@ -19,14 +19,15 @@ describe("backPainWorkout", () => {
     }
   });
 
-  it("starts and ends on an exercise with 10s rests only between exercises", () => {
-    expect(isRest(steps[0])).toBe(false);
+  it("opens on a Rest, ends on an exercise, with a 10s Rest before every exercise", () => {
+    expect(isRest(steps[0])).toBe(true);
     expect(isRest(steps[steps.length - 1])).toBe(false);
     steps.forEach((step, i) => {
       if (isRest(step)) {
         expect(step.duration).toBe(10);
-        expect(isRest(steps[i - 1])).toBe(false);
         expect(isRest(steps[i + 1])).toBe(false);
+      } else if (i > 0) {
+        expect(isRest(steps[i - 1])).toBe(true);
       }
     });
   });
@@ -37,17 +38,18 @@ describe("backPainWorkout", () => {
 });
 
 describe("buildWorkout", () => {
-  it("interleaves a 10s Rest before every exercise except the first", () => {
+  it("interleaves a 10s Rest before every exercise, including the first", () => {
     const w = buildWorkout("back-pain", "X", [
       { slug: "06-piriforme-gauche", label: "A", duration: 30, text: "" },
       { slug: "07-piriforme-droit", label: "B", duration: 30, text: "" },
     ]);
-    expect(w.steps.map((s) => s.label)).toEqual(["A", "Rest", "B"]);
-    expect(w.steps[1].duration).toBe(10);
-    expect(typeof w.steps[0].voice).toBe("string");
-    expect(typeof w.steps[0].image).toBe("string");
-    // The Rest previews the following exercise: it carries that exercise's voice.
-    expect(w.steps[1].voice).toBe(w.steps[2].voice);
+    expect(w.steps.map((s) => s.label)).toEqual(["Rest", "A", "Rest", "B"]);
+    expect(w.steps[0].duration).toBe(10);
+    expect(typeof w.steps[1].voice).toBe("string");
+    expect(typeof w.steps[1].image).toBe("string");
+    // Each Rest previews the following exercise: it carries that exercise's voice.
+    expect(w.steps[0].voice).toBe(w.steps[1].voice);
+    expect(w.steps[2].voice).toBe(w.steps[3].voice);
   });
 
   it("throws on a slug with no matching asset", () => {

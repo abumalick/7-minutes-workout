@@ -32,6 +32,7 @@ export const sevenMinuteWorkout: Workout = {
   name: "Entraînement 7 minutes",
   cues: FR_CUES,
   steps: [
+    { label: "Rest", duration: 10 },
     { label: "Jumping jacks", duration: 30 },
     { label: "Rest", duration: 10 },
     { label: "Chaise contre le mur", duration: 30 },
@@ -93,11 +94,10 @@ export const buildWorkout = (
     id,
     name,
     cues: FR_CUES,
-    // The Rest before each exercise previews it: carry that exercise's voice so the
-    // instruction is spoken (and replayable) during the rest.
-    steps: exercises.flatMap((step, i) =>
-      i === 0 ? [step] : [{ label: "Rest", duration: 10, voice: step.voice }, step],
-    ),
+    // Every exercise — including the first — is preceded by a Rest that previews it:
+    // the rest carries that exercise's voice so the instruction is spoken (and
+    // replayable) during the rest, and the workout opens on a get-ready rest.
+    steps: exercises.flatMap((step) => [{ label: "Rest", duration: 10, voice: step.voice }, step]),
   };
 };
 
