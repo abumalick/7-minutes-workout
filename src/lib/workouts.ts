@@ -1,5 +1,6 @@
 import type { Workout, WorkoutStep } from "./workout";
-import { backPainInstructions } from "./back-pain-instructions";
+import type { ExerciseInstruction } from "./exercise";
+import { instructions as backPainInstructions } from "./back-pain-instructions";
 
 export const sevenMinuteWorkout: Workout = {
   id: "seven-minute",
@@ -33,43 +34,48 @@ export const sevenMinuteWorkout: Workout = {
   ],
 };
 
-const voiceUrls = import.meta.glob("./assets/voice/back-pain/*.mp3", {
+const voiceUrls = import.meta.glob("./assets/voice/**/*.mp3", {
   eager: true,
   query: "?url",
   import: "default",
 }) as Record<string, string>;
 
-const voiceFor = (slug: string): string => {
-  const entry = Object.entries(voiceUrls).find(([path]) => path.endsWith(`/${slug}.mp3`));
-  if (!entry) throw new Error(`Missing voice audio for ${slug}`);
-  return entry[1];
-};
-
-const imageUrls = import.meta.glob("./assets/images/back-pain/*.png", {
+const imageUrls = import.meta.glob("./assets/images/**/*.png", {
   eager: true,
   query: "?url",
   import: "default",
 }) as Record<string, string>;
 
-const imageFor = (slug: string): string => {
-  const entry = Object.entries(imageUrls).find(([path]) => path.endsWith(`/${slug}.png`));
-  if (!entry) throw new Error(`Missing image for ${slug}`);
+const assetFor = (urls: Record<string, string>, id: string, slug: string, ext: string): string => {
+  const entry = Object.entries(urls).find(([path]) => path.endsWith(`/${id}/${slug}.${ext}`));
+  if (!entry) throw new Error(`Missing ${ext} asset for ${id}/${slug}`);
   return entry[1];
 };
 
-const backPainExercises: WorkoutStep[] = backPainInstructions.map((ex) => ({
-  label: ex.label,
-  duration: ex.duration,
-  voice: voiceFor(ex.slug),
-  image: imageFor(ex.slug),
-}));
-
-export const backPainWorkout: Workout = {
-  id: "back-pain",
-  name: "Routine mal de dos",
-  steps: backPainExercises.flatMap((step, i) =>
-    i === 0 ? [step] : [{ label: "Rest", duration: 10 }, step],
-  ),
+export const buildWorkout = (
+  id: string,
+  name: string,
+  instructions: ExerciseInstruction[],
+): Workout => {
+  const exercises: WorkoutStep[] = instructions.map((ex) => ({
+    label: ex.label,
+    duration: ex.duration,
+    voice: assetFor(voiceUrls, id, ex.slug, "mp3"),
+    image: assetFor(imageUrls, id, ex.slug, "png"),
+  }));
+  return {
+    id,
+    name,
+    steps: exercises.flatMap((step, i) =>
+      i === 0 ? [step] : [{ label: "Rest", duration: 10 }, step],
+    ),
+  };
 };
+
+export const backPainWorkout = buildWorkout(
+  "back-pain",
+  "Routine mal de dos",
+  backPainInstructions,
+);
 
 export const WORKOUTS: Workout[] = [sevenMinuteWorkout, backPainWorkout];

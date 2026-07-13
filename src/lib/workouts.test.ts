@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isRest } from "./workout";
-import { backPainWorkout } from "./workouts";
+import { backPainWorkout, buildWorkout } from "./workouts";
 
 describe("backPainWorkout", () => {
   const steps = backPainWorkout.steps;
@@ -33,5 +33,24 @@ describe("backPainWorkout", () => {
 
   it("has 19 exercises", () => {
     expect(steps.filter((s) => !isRest(s))).toHaveLength(19);
+  });
+});
+
+describe("buildWorkout", () => {
+  it("interleaves a 10s Rest before every exercise except the first", () => {
+    const w = buildWorkout("back-pain", "X", [
+      { slug: "06-piriforme-gauche", label: "A", duration: 30, text: "" },
+      { slug: "07-piriforme-droit", label: "B", duration: 30, text: "" },
+    ]);
+    expect(w.steps.map((s) => s.label)).toEqual(["A", "Rest", "B"]);
+    expect(w.steps[1].duration).toBe(10);
+    expect(typeof w.steps[0].voice).toBe("string");
+    expect(typeof w.steps[0].image).toBe("string");
+  });
+
+  it("throws on a slug with no matching asset", () => {
+    expect(() =>
+      buildWorkout("back-pain", "X", [{ slug: "nope", label: "A", duration: 30, text: "" }]),
+    ).toThrow();
   });
 });
