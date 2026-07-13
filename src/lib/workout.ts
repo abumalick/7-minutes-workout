@@ -4,13 +4,21 @@ export type WorkoutStep = {
   voice?: string;
   image?: string;
 };
-export type Workout = { id: string; name: string; steps: WorkoutStep[] };
+// Shared spoken instructor cues: the "go" said as an exercise begins and the
+// countdown numbers keyed by the seconds shown (1..5).
+export type WorkoutCues = { go: string; countdown: Record<number, string> };
+export type Workout = {
+  id: string;
+  name: string;
+  steps: WorkoutStep[];
+  cues?: WorkoutCues;
+};
 export type WorkoutState = {
   currentIndex: number;
   timeLeft: number;
   isRunning: boolean;
 };
-export type Cue = "start" | "tick" | "success";
+export type Cue = "start" | "tick" | "success" | "instruct";
 export type Transition = { state: WorkoutState; cues: Cue[] };
 
 const REST = "Rest";
@@ -32,20 +40,6 @@ const prevExercise = (steps: WorkoutStep[], i: number): number => {
   return j;
 };
 
-// Cues fired when moving off `fromIndex` onto `toIndex`.
-// Leaving an active exercise -> success; entering an exercise -> start. Rest emits neither.
-const stepCues = (
-  steps: WorkoutStep[],
-  fromIndex: number,
-  toIndex: number,
-  leavingActive: boolean,
-): Cue[] => {
-  const cues: Cue[] = [];
-  if (leavingActive && !isRest(steps[fromIndex])) cues.push("success");
-  if (!isRest(steps[toIndex])) cues.push("start");
-  return cues;
-};
-
 export function tick(steps: WorkoutStep[], s: WorkoutState): Transition {
   if (s.timeLeft > 0) {
     const cues: Cue[] = s.timeLeft <= 5 ? ["tick"] : [];
@@ -53,30 +47,42 @@ export function tick(steps: WorkoutStep[], s: WorkoutState): Transition {
   }
   const toIndex = advance(steps, s.currentIndex);
   const completed = s.currentIndex === steps.length - 1;
+  const cues: Cue[] = [];
+  // Finishing an exercise chimes; a Rest previews the next exercise's instruction,
+  // while the exercise itself only signals "go". A finished workout does neither.
+  if (!isRest(steps[s.currentIndex])) cues.push("success");
+  if (!completed) cues.push(isRest(steps[toIndex]) ? "instruct" : "start");
   return {
     state: {
       currentIndex: toIndex,
       timeLeft: steps[toIndex].duration,
       isRunning: completed ? false : s.isRunning,
     },
-    cues: stepCues(steps, s.currentIndex, toIndex, true),
+    cues,
   };
 }
 
 export function start(steps: WorkoutStep[], s: WorkoutState): Transition {
+  // At the very start of a step, speak its instruction (the first exercise has no
+  // preceding Rest to preview it); a mid-step resume stays silent.
   const atStepStart = s.timeLeft === steps[s.currentIndex].duration;
-  const cues: Cue[] = !isRest(steps[s.currentIndex]) && atStepStart ? ["start"] : [];
+  const cues: Cue[] = atStepStart ? ["instruct"] : [];
   return { state: { ...s, isRunning: true }, cues };
 }
 
+// Manual skip lands directly on an exercise, hopping its Rest preview — so speak that
+// exercise's instruction (not just "go"), plus a success chime if leaving a live exercise.
 function skip(steps: WorkoutStep[], s: WorkoutState, toIndex: number): Transition {
+  const cues: Cue[] = [];
+  if (s.timeLeft > 0 && !isRest(steps[s.currentIndex])) cues.push("success");
+  cues.push("instruct");
   return {
     state: {
       ...s,
       currentIndex: toIndex,
       timeLeft: steps[toIndex].duration,
     },
-    cues: stepCues(steps, s.currentIndex, toIndex, s.timeLeft > 0),
+    cues,
   };
 }
 
