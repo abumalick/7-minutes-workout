@@ -95,10 +95,23 @@
       <button
         type="button"
         onclick={backToPicker}
-        class="absolute left-4 text-blue-600 font-bold"
+        class="absolute left-4 text-blue-600"
         aria-label="Back to workouts"
       >
-        ← Retour
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="19" x2="5" y1="12" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
       </button>
     {/if}
     <h1 class="text-3xl font-bold text-center">
