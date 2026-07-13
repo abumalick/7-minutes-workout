@@ -8,3 +8,6 @@ dist-ssr
 
 # local scratch (not committed)
 .tmp/
+
+# per-task git worktrees (see "Dev workflow" in CLAUDE.md)
+.worktrees/
