@@ -12,7 +12,8 @@ automatically — no routing work.
 
 ## Prerequisites
 
-- Tools: `yt-dlp`, `ffmpeg`, ImageMagick (`magick`), Bitwarden CLI (`bw`, unlocked).
+- Tools: `yt-dlp`, `ffmpeg`, ImageMagick (v7 `magick` OR v6 `convert`/`montage` — this box has v6, so use `convert`/`montage`), Bitwarden CLI (`bw`, unlocked).
+- Run all shell commands from the repo root; do NOT `cd` into `.tmp/` in a compound command — the shell cwd persists across calls and later `node scripts/…` invocations will fail to resolve.
 - Keys (NEVER commit): OpenAI = `bw get notes "OPENAI API KEY" | tr -d '[:space:]'`;
   ElevenLabs from its Bitwarden item. Voice defaults to premade male
   `ELEVENLABS_VOICE_ID=onwK4e9ZLuTAKqWW03F9` (the multilingual model covers most languages).
@@ -25,10 +26,11 @@ dynamic `import("../src/lib/<id>-instructions.ts")` (scripts).
 
 ## Steps
 
-1. **Extract** (scratch in `.tmp/`, gitignored):
-   - `yt-dlp --print "%(chapters)j" <url>` → chapter list + timestamps (maps ~1:1 to exercises).
-   - `yt-dlp --print title --print duration_string --print description <url>` for metadata.
-   - Spoken text: `yt-dlp --skip-download --write-auto-subs --sub-langs "<lang>" --sub-format vtt --js-runtimes bun <url>`,
+1. **Extract** (scratch in `.tmp/`, gitignored). YouTube now needs a JS runtime, so pass
+   `--no-update --js-runtimes bun` on EVERY `yt-dlp` call (without it you get only warnings and empty output):
+   - `yt-dlp --no-update --js-runtimes bun --print "%(chapters)j" <url>` → chapters + timestamps (maps ~1:1 to exercises).
+   - `yt-dlp --no-update --js-runtimes bun --print title --print duration_string --print description <url>` for metadata.
+   - Spoken text: `yt-dlp --no-update --js-runtimes bun --skip-download --write-auto-subs --sub-langs "<lang>" --sub-format vtt <url>`,
      then parse the `.vtt` (regex on `HH:MM:SS.mmm -->`, dedup) for what the coach says per chapter.
    - ⚠️ Chapter gaps are NOT hold times — choose deliberate durations (~30s; longer for holds).
 
@@ -54,11 +56,13 @@ dynamic `import("../src/lib/<id>-instructions.ts")` (scripts).
    - Download ≤720p: `yt-dlp -f "bv*[height<=720]+ba/b[height<=720]" -o .tmp/<id>.mp4 <url>`.
    - One mid-hold frame per exercise: `ffmpeg -ss <t> -i .tmp/<id>.mp4 -frames:v 1 .tmp/ref-<slug>.png`
      (blank any face-cam PiP with `-vf "drawbox=x:y:w:h:color=gray:t=fill"`).
-   - `magick montage .tmp/ref-*.png -tile 4x -geometry +4+4 .tmp/sheet.png`, then Read it to author
+   - `montage .tmp/ref-*.png -tile 4x -geometry 320x320+6+6 .tmp/sheet.png`, then Read it to author
      each entry's `image: { accent, view, pose }` (accent = the muscle highlighted blue; pose =
      detailed anatomy). Add the `image` fields to `<id>-instructions.ts` (and its `image` test assertions).
+     Image generation is slow (~15s/image × retries) — expect the batch to exceed a 2-min Bash timeout;
+     it skips-existing, so just re-run to finish the rest.
    - Validate ONE first: `OPENAI_API_KEY="$(bw get notes 'OPENAI API KEY'|tr -d '[:space:]')" node scripts/generate-images.ts <id> <first-slug>`;
-     preview `magick <png> -background '#f3f4f6' -flatten .tmp/prev.png` and Read it.
+     preview `convert <png> -background '#f3f4f6' -flatten .tmp/prev.png` and Read it.
    - Then all: `OPENAI_API_KEY=... node scripts/generate-images.ts <id>`.
 
 7. **Gallery** — `node scripts/build-gallery.ts <id>`, then publish `.tmp/gallery-<id>.html` with
@@ -66,7 +70,7 @@ dynamic `import("../src/lib/<id>-instructions.ts")` (scripts).
 
 8. **Iterate** on wrong poses: edit that entry's `image.pose` and
    `node scripts/generate-images.ts <id> --force <slug>`; for a pure left/right mirror error use
-   `magick src/lib/assets/images/<id>/<slug>.png -flop $_` (in place, no regen). Re-verify against
+   `convert src/lib/assets/images/<id>/<slug>.png -flop $_` (in place, no regen). Re-verify against
    the video frames, then rebuild + republish the gallery.
 
 9. **Verify + commit** — `pnpm test && pnpm run lint && pnpm run build`; commit
