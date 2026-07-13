@@ -30,27 +30,30 @@ describe("tick", () => {
     expect(tick(S, at(0, 1))).toEqual({ state: at(0, 0), cues: ["tick"] });
   });
 
-  it("advances exercise -> rest with a success cue only", () => {
-    expect(tick(S, at(0, 0))).toEqual({ state: at(1, 10), cues: ["success"] });
+  it("advances exercise -> rest with success then instruct (rest previews next)", () => {
+    expect(tick(S, at(0, 0))).toEqual({
+      state: at(1, 10),
+      cues: ["success", "instruct"],
+    });
   });
 
-  it("advances rest -> exercise with a start cue only", () => {
+  it("advances rest -> exercise with a start cue only (instruction already previewed)", () => {
     expect(tick(S, at(1, 0))).toEqual({ state: at(2, 30), cues: ["start"] });
   });
 
-  it("wraps after the last step, stops running, emits success then start", () => {
+  it("wraps after the last step, stops running, emits success only", () => {
     expect(tick(S, at(24, 0))).toEqual({
       state: at(0, 30, false),
-      cues: ["success", "start"],
+      cues: ["success"],
     });
   });
 });
 
 describe("start", () => {
-  it("starts running and cues start at the beginning of an exercise", () => {
+  it("starts running and cues instruct at the beginning of an exercise", () => {
     expect(start(S, at(0, 30, false))).toEqual({
       state: at(0, 30, true),
-      cues: ["start"],
+      cues: ["instruct"],
     });
   });
 
@@ -61,46 +64,46 @@ describe("start", () => {
     });
   });
 
-  it("starts running with no cue on a Rest step", () => {
+  it("starts running and cues instruct at the beginning of a Rest step", () => {
     expect(start(S, at(1, 10, false))).toEqual({
       state: at(1, 10, true),
-      cues: [],
+      cues: ["instruct"],
     });
   });
 });
 
 describe("next", () => {
-  it("skips Rest to the next exercise, success leaving and start entering", () => {
+  it("skips Rest to the next exercise, success leaving and instruct entering", () => {
     expect(next(S, at(0, 30))).toEqual({
       state: at(2, 30),
-      cues: ["success", "start"],
+      cues: ["success", "instruct"],
     });
   });
 
-  it("leaves Rest with no success, enters exercise with start", () => {
-    expect(next(S, at(1, 10))).toEqual({ state: at(2, 30), cues: ["start"] });
+  it("leaves Rest with no success, enters exercise with instruct", () => {
+    expect(next(S, at(1, 10))).toEqual({ state: at(2, 30), cues: ["instruct"] });
   });
 
   it("wraps to the first step and preserves isRunning", () => {
     expect(next(S, at(24, 30, false))).toEqual({
       state: at(0, 30, false),
-      cues: ["success", "start"],
+      cues: ["success", "instruct"],
     });
   });
 });
 
 describe("prev", () => {
-  it("wraps backward from the first step, success then start", () => {
+  it("wraps backward from the first step, success then instruct", () => {
     expect(prev(S, at(0, 30))).toEqual({
       state: at(24, 30),
-      cues: ["success", "start"],
+      cues: ["success", "instruct"],
     });
   });
 
-  it("skips Rest to the previous exercise, success leaving and start entering", () => {
+  it("skips Rest to the previous exercise, success leaving and instruct entering", () => {
     expect(prev(S, at(2, 30))).toEqual({
       state: at(0, 30),
-      cues: ["success", "start"],
+      cues: ["success", "instruct"],
     });
   });
 });

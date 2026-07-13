@@ -1,37 +1,62 @@
-import type { Workout, WorkoutStep } from "./workout";
+import type { Workout, WorkoutCues, WorkoutStep } from "./workout";
 import type { ExerciseInstruction } from "./exercise";
 import { instructions as backPainInstructions } from "./back-pain-instructions";
 import { instructions as officeBackInstructions } from "./office-back-instructions";
 
+const cueUrls = import.meta.glob("./assets/voice/cues/fr/*.mp3", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
+
+const cueFor = (name: string): string => {
+  const entry = Object.entries(cueUrls).find(([path]) => path.endsWith(`/cues/fr/${name}.mp3`));
+  if (!entry) throw new Error(`Missing cue asset ${name}`);
+  return entry[1];
+};
+
+// One shared French instructor cue set for every workout.
+const FR_CUES: WorkoutCues = {
+  go: cueFor("go"),
+  countdown: {
+    1: cueFor("1"),
+    2: cueFor("2"),
+    3: cueFor("3"),
+    4: cueFor("4"),
+    5: cueFor("5"),
+  },
+};
+
 export const sevenMinuteWorkout: Workout = {
   id: "seven-minute",
-  name: "7 Minute Workout",
+  name: "Entraînement 7 minutes",
+  cues: FR_CUES,
   steps: [
-    { label: "Jumping Jacks", duration: 30 },
+    { label: "Jumping jacks", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Wall Sit", duration: 30 },
+    { label: "Chaise contre le mur", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Push-ups", duration: 30 },
+    { label: "Pompes", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Abdominal Crunch", duration: 30 },
+    { label: "Crunch abdominal", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Step-up onto Chair", duration: 30 },
+    { label: "Montée sur chaise", duration: 30 },
     { label: "Rest", duration: 10 },
     { label: "Squats", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Triceps Dip on Chair", duration: 30 },
+    { label: "Dips triceps sur chaise", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Plank", duration: 30 },
+    { label: "Planche", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "High Knees Running in Place", duration: 30 },
+    { label: "Montées de genoux sur place", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Lunges", duration: 30 },
+    { label: "Fentes", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Push-up and Rotation", duration: 30 },
+    { label: "Pompe avec rotation", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Side Plank (Left)", duration: 30 },
+    { label: "Planche latérale (gauche)", duration: 30 },
     { label: "Rest", duration: 10 },
-    { label: "Side Plank (Right)", duration: 30 },
+    { label: "Planche latérale (droite)", duration: 30 },
   ],
 };
 
@@ -67,8 +92,11 @@ export const buildWorkout = (
   return {
     id,
     name,
+    cues: FR_CUES,
+    // The Rest before each exercise previews it: carry that exercise's voice so the
+    // instruction is spoken (and replayable) during the rest.
     steps: exercises.flatMap((step, i) =>
-      i === 0 ? [step] : [{ label: "Rest", duration: 10 }, step],
+      i === 0 ? [step] : [{ label: "Rest", duration: 10, voice: step.voice }, step],
     ),
   };
 };

@@ -2,14 +2,16 @@ import { browser } from "$app/environment";
 import startUrl from "./assets/sounds/start.mp3";
 import successUrl from "./assets/sounds/success.mp3";
 import tickUrl from "./assets/sounds/tick.mp3";
-import type { Cue } from "./workout";
 
-const urls: Record<Cue, string> = {
+// The cues backed by a bundled sound file; the `instruct` cue is spoken via playVoice.
+type SoundCue = "start" | "tick" | "success";
+
+const urls: Record<SoundCue, string> = {
   start: startUrl,
   tick: tickUrl,
   success: successUrl,
 };
-const cache: Partial<Record<Cue, HTMLAudioElement>> = {};
+const cache: Partial<Record<SoundCue, HTMLAudioElement>> = {};
 
 // One reused element for spoken instructions. Mobile browsers only let a media
 // element play from a timer if that same element was first started during a
@@ -24,7 +26,7 @@ const getVoiceEl = (): HTMLAudioElement => (voiceEl ??= new Audio());
 export function unlockAudio(): void {
   if (!browser) return;
   const elements: HTMLAudioElement[] = [
-    ...(Object.keys(urls) as Cue[]).map((cue) => (cache[cue] ??= new Audio(urls[cue]))),
+    ...(Object.keys(urls) as SoundCue[]).map((cue) => (cache[cue] ??= new Audio(urls[cue]))),
     getVoiceEl(),
   ];
   for (const el of elements) {
@@ -37,7 +39,7 @@ export function unlockAudio(): void {
   }
 }
 
-export function play(cue: Cue): void {
+export function play(cue: SoundCue): void {
   if (!browser) return;
   const audio = (cache[cue] ??= new Audio(urls[cue]));
   audio.currentTime = 0;

@@ -53,9 +53,25 @@
     timeLeft = state.timeLeft
     isRunning = state.isRunning
     const step = selected?.steps[currentIndex]
+    const workoutCues = selected?.cues
     for (const cue of cues) {
-      if (cue === 'start' && step?.voice) playVoice(step.voice)
-      else play(cue)
+      if (cue === 'instruct') {
+        if (step?.voice) playVoice(step.voice)
+        else play('start')
+      } else if (cue === 'start') {
+        if (workoutCues) playVoice(workoutCues.go)
+        else play('start')
+      } else if (cue === 'tick') {
+        // `timeLeft + 1` is the number the user just saw (5..1). Exercises count the
+        // full last 5s to "stop"; a rest speaks only its last 3s as a "get ready",
+        // landing after the rest's spoken instruction.
+        const n = timeLeft + 1
+        const inRest = step ? isRest(step) : false
+        if (workoutCues && (!inRest || n <= 3)) playVoice(workoutCues.countdown[n])
+        else if (!workoutCues) play('tick')
+      } else {
+        play(cue)
+      }
     }
   }
 
