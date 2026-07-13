@@ -8,7 +8,9 @@ Change the workout flow so the spoken instruction for an exercise plays **during
 rest that precedes it** (a preview + prep window), instead of at the moment the exercise
 starts. Add spoken French "instructor" audio: a spoken **"C'est parti !"** when an
 exercise begins and a spoken **"cinq, quatre, trois, deux, un"** countdown in its last
-five seconds. Keep a replay control available in **both** the rest and the exercise.
+five seconds, plus a shorter **"trois, deux, un"** "get ready" countdown in the last
+seconds of each rest. Keep a replay control available in **both** the rest and the
+exercise. Also translate the 7-minute workout's copy to French so the whole app is French.
 
 ## Non-goals
 
@@ -16,8 +18,8 @@ five seconds. Keep a replay control available in **both** the rest and the exerc
   every workout, including the "7 Minute Workout".
 - No spoken "stop" at the exercise end (chosen: the existing success chime marks the end,
   so the following rest instruction plays without an audio collision).
-- Do **not** translate the "7 Minute Workout" exercise labels — they stay English for now
-  (see Open questions).
+- No per-exercise **spoken instructions** for the 7-minute workout — it has none, so its
+  rests carry no `voice` (only labels are translated; see design §7).
 
 ## Current behaviour (baseline)
 
@@ -92,9 +94,13 @@ For each cue, using the selected workout's `cues` and the landed `step`:
 - `instruct` → `step.voice ? playVoice(step.voice) : play("start")` (beep fallback covers a
   step with no instruction).
 - `start` → `cues?.go ? playVoice(cues.go) : play("start")`.
-- `tick` → during an **exercise** with `cues`: `playVoice(cues.countdown[timeLeft + 1])`
-  (`timeLeft + 1` is the number the user just saw, 5..1 — worth a comment); during a rest
-  with `cues`: silent; with no `cues`: `play("tick")`.
+- `tick` → the spoken number is `cues.countdown[timeLeft + 1]` (`timeLeft + 1` is the
+  number the user just saw, 5..1 — worth a comment):
+  - during an **exercise** with `cues`: play it for the full last 5s (5..1, "stop"
+    countdown);
+  - during a **rest** with `cues`: play it only for the last **3s** (3..1, "get ready"
+    countdown) so it lands _after_ the rest's spoken instruction, never on top of it;
+  - with no `cues`: `play("tick")` (beep), unchanged.
 - `success` → `play("success")` (chime), unchanged.
 
 The `success` chime uses the `play()` channel and the `instruct` uses `playVoice()`; they
@@ -125,7 +131,18 @@ New `scripts/generate-cues.ts`: same ElevenLabs voice/model as `generate-voice.t
 
 Clips are committed like the other mp3s.
 
-### 6. Testing
+### 6. 7-minute workout localization
+
+Translate `sevenMinuteWorkout`'s `name` and exercise `label`s to French (data-only edit in
+`src/lib/workouts.ts`), e.g. `"7 Minute Workout"` → `"Entraînement 7 minutes"`,
+`"Jumping Jacks"` → `"Jumping jacks"`, `"Wall Sit"` → `"Chaise contre le mur"`,
+`"Push-ups"` → `"Pompes"`, `"Squats"` → `"Squats"`, `"Plank"` → `"Planche"`,
+`"Lunges"` → `"Fentes"`, etc. The `"Rest"` step label is a **magic string** (`isRest`
+compares `label === "Rest"`) and is left as-is — it is not user-facing copy to translate
+here (and back-pain workouts already display it); changing it is out of scope. The 7-minute
+workout gains no per-exercise `voice`; only its labels change.
+
+### 7. Testing
 
 - `workout.test.ts`: assert `instruct` on auto-advance into a rest, `start` on auto-advance
   into an exercise, `instruct` on `next`/`prev`, `instruct` on first Start, `["success"]`
@@ -134,9 +151,8 @@ Clips are committed like the other mp3s.
   `voice`, and that every workout in `WORKOUTS` carries a `cues` set whose `go` and
   `countdown[1..5]` resolve.
 
-## Open questions
+## Resolved decisions
 
-1. Translate the "7 Minute Workout" exercise labels to French too (currently English,
-   spoken cues French)? Left English for now.
-2. Any "get ready" countdown during the rest's last seconds, or keep the rest silent after
-   the instruction? Spec keeps it silent.
+1. Translate the 7-minute workout's name and exercise labels to French (§6). `"Rest"` stays
+   as the magic label.
+2. Add a spoken "get ready" countdown in the rest's last 3s (§3), after the instruction.
