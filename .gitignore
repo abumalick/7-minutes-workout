@@ -11,3 +11,6 @@ dist-ssr
 
 # per-task git worktrees (see "Dev workflow" in CLAUDE.md)
 .worktrees/
+
+# per-session autopilot decision logs (local record, not tracked)
+ai/autopilot/
