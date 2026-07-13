@@ -1,6 +1,7 @@
 import type { Workout, WorkoutStep } from "./workout";
 import type { ExerciseInstruction } from "./exercise";
 import { instructions as backPainInstructions } from "./back-pain-instructions";
+import { instructions as officeBackInstructions } from "./office-back-instructions";
 
 export const sevenMinuteWorkout: Workout = {
   id: "seven-minute",
@@ -78,4 +79,10 @@ export const backPainWorkout = buildWorkout(
   backPainInstructions,
 );
 
-export const WORKOUTS: Workout[] = [sevenMinuteWorkout, backPainWorkout];
+export const officeBackWorkout = buildWorkout(
+  "office-back",
+  "Mal de dos au bureau",
+  officeBackInstructions,
+);
+
+export const WORKOUTS: Workout[] = [sevenMinuteWorkout, backPainWorkout, officeBackWorkout];
