@@ -23,3 +23,13 @@
 - [22:08] Shared type home — options: new src/lib/exercise.ts / keep type in back-pain-instructions.ts — chose: new src/lib/exercise.ts — why: neutral home for the generic ExerciseInstruction type shared by all workouts + scripts.
 - [22:08] Script file-write API — options: keep Bun.write / node:fs writeFile — chose: node:fs/promises writeFile — why: makes the CLAUDE.md-documented `node scripts/*.ts` invocation actually work (Bun global is undefined under node); runtime-agnostic.
 - [22:08] Execution approach — options: inline / subagent-driven — chose: inline — why: cohesive single-codebase refactor, full context held (mirrors session-1 choice).
+- [22:20] Skill built (7 tasks), tests/lint/build green; merged to main --no-ff (user choice) → post-merge auto-deployed.
+
+## Session 2b (2026-07-13) — live skill run on youtu.be/b6O-XzAGbVo
+
+- [11:29] New workout id/name — options: office-back "Mal de dos au bureau" / dos-bureau — chose: office-back — why: clear English kebab id, French display name matches app.
+- [11:29] Rotation exercise — options: single bilateral step / split L/R — chose: split into 02-rotation-gauche + 03-rotation-droite — why: coach does "d'un côté puis de l'autre"; matches app's L/R-split convention + per-side image.
+- [11:29] Durations — options: chapter gaps / deliberate holds — chose: deliberate 25–40s holds — why: chapter gaps are pacing, not hold times.
+- [11:43] Pictogram framing — options: match video's seated+standing demos / all seated — chose: all seated on a plain chair — why: coherent set for a "position assise" office routine; validation image confirmed chair renders despite "no equipment" style line.
+- [11:48] All 7 voice+images generated, gallery published (artifact 053f72e9), full gate green, committed on feat/workout-from-youtube-run. Merge/deploy of the new workout escalated to user.
+- [11:50] Skill hardened from run: yt-dlp needs --no-update --js-runtimes bun; box has ImageMagick v6 (convert/montage, not magick); don't cd into .tmp; image batch exceeds 2-min timeout (re-run, skips existing).
