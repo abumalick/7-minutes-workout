@@ -61,6 +61,12 @@ export function preload(list: string[]): void {
   for (const url of list) load(url).catch(() => {});
 }
 
+// The decoded length (seconds) of a clip, once preloaded — used to size a rest to
+// its instruction. Null until decoded.
+export function voiceDuration(url: string): number | null {
+  return buffers.get(url)?.duration ?? null;
+}
+
 // Must run inside the Start-button gesture: unlocks the file cues (played then
 // paused) and resumes the AudioContext, playing a one-sample silent buffer so
 // iOS allows later timer-driven buffer playback.
