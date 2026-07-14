@@ -2,7 +2,13 @@
   import { browser } from '$app/environment'
   import WorkoutPanel from '$lib/WorkoutPanel.svelte'
   import WorkoutPicker from '$lib/WorkoutPicker.svelte'
-  import { play, playVoice, unlockAudio } from '$lib/sounds'
+  import {
+    play,
+    playVoice,
+    preload,
+    unlockAudio,
+    voiceDuration,
+  } from '$lib/sounds'
   import { releaseWakeLock, requestWakeLock } from '$lib/wake-lock'
   import {
     isRest,
@@ -21,12 +27,25 @@
   let timeLeft = $state(0)
   let isRunning = $state(false)
 
+  // Quiet "get into position" beat left after a rest's spoken instruction finishes,
+  // before the exercise begins.
+  const GET_READY_SECONDS = 2
+
   function selectWorkout(id: string) {
     const workout = WORKOUTS.find((w) => w.id === id)!
     selectedId = id
     currentIndex = 0
     timeLeft = workout.steps[0].duration
     isRunning = false
+    // Decode every spoken clip up front so the countdown and rest previews play
+    // instantly from the timer.
+    const voices = workout.steps
+      .map((s) => s.voice)
+      .filter((v): v is string => Boolean(v))
+    const cues = workout.cues
+      ? [workout.cues.go, ...Object.values(workout.cues.countdown)]
+      : []
+    preload([...new Set([...voices, ...cues])])
   }
 
   function backToPicker() {
@@ -56,18 +75,28 @@
     const workoutCues = selected?.cues
     for (const cue of cues) {
       if (cue === 'instruct') {
-        if (step?.voice) playVoice(step.voice)
-        else play('start')
+        if (step?.voice) {
+          playVoice(step.voice)
+          // A rest previews the next exercise: grow it to fit the full spoken
+          // instruction plus a get-ready beat, so the voice is never cut off.
+          if (isRest(step)) {
+            const spoken = voiceDuration(step.voice)
+            if (spoken) {
+              timeLeft = Math.max(
+                step.duration,
+                Math.ceil(spoken) + GET_READY_SECONDS,
+              )
+            }
+          }
+        } else play('start')
       } else if (cue === 'start') {
         if (workoutCues) playVoice(workoutCues.go)
         else play('start')
       } else if (cue === 'tick') {
-        // `timeLeft + 1` is the number the user just saw (5..1). Exercises count the
-        // full last 5s to "stop"; a rest speaks only its last 3s as a "get ready",
-        // landing after the rest's spoken instruction.
-        const n = timeLeft + 1
+        // Spoken countdown (5..1) only during exercises; rests stay quiet so the
+        // instruction preview is never interrupted.
         const inRest = step ? isRest(step) : false
-        if (workoutCues && (!inRest || n <= 3)) playVoice(workoutCues.countdown[n])
+        if (workoutCues && !inRest) playVoice(workoutCues.countdown[timeLeft + 1])
         else if (!workoutCues) play('tick')
       } else {
         play(cue)

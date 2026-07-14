@@ -28,7 +28,7 @@ export const isRest = (step: { label: string }): boolean => step.label === REST;
 const advance = (steps: WorkoutStep[], i: number): number => (i + 1) % steps.length;
 const retreat = (steps: WorkoutStep[], i: number): number => (i - 1 + steps.length) % steps.length;
 
-// Manual skip lands on the next/previous exercise, hopping over any Rest steps.
+// Manual skip walks to the next/previous exercise, hopping over any Rest steps.
 const nextExercise = (steps: WorkoutStep[], i: number): number => {
   let j = advance(steps, i);
   while (isRest(steps[j]) && j !== i) j = advance(steps, j);
@@ -38,6 +38,18 @@ const prevExercise = (steps: WorkoutStep[], i: number): number => {
   let j = retreat(steps, i);
   while (isRest(steps[j]) && j !== i) j = retreat(steps, j);
   return j;
+};
+
+// The exercise the current position belongs to: itself on an exercise, the one a
+// Rest previews on a rest.
+const currentExercise = (steps: WorkoutStep[], i: number): number =>
+  isRest(steps[i]) ? nextExercise(steps, i) : i;
+
+// The Rest that previews an exercise (the step just before it), so a skip lands on
+// the get-ready rest rather than straight on the exercise.
+const restBefore = (steps: WorkoutStep[], i: number): number => {
+  const before = retreat(steps, i);
+  return isRest(steps[before]) ? before : i;
 };
 
 export function tick(steps: WorkoutStep[], s: WorkoutState): Transition {
@@ -70,8 +82,9 @@ export function start(steps: WorkoutStep[], s: WorkoutState): Transition {
   return { state: { ...s, isRunning: true }, cues };
 }
 
-// Manual skip lands directly on an exercise, hopping its Rest preview — so speak that
-// exercise's instruction (not just "go"), plus a success chime if leaving a live exercise.
+// Manual skip lands on the Rest that previews the target exercise — so speak that
+// exercise's instruction during the rest, plus a success chime if leaving a live
+// exercise.
 function skip(steps: WorkoutStep[], s: WorkoutState, toIndex: number): Transition {
   const cues: Cue[] = [];
   if (s.timeLeft > 0 && !isRest(steps[s.currentIndex])) cues.push("success");
@@ -87,9 +100,11 @@ function skip(steps: WorkoutStep[], s: WorkoutState, toIndex: number): Transitio
 }
 
 export function next(steps: WorkoutStep[], s: WorkoutState): Transition {
-  return skip(steps, s, nextExercise(steps, s.currentIndex));
+  const exercise = nextExercise(steps, currentExercise(steps, s.currentIndex));
+  return skip(steps, s, restBefore(steps, exercise));
 }
 
 export function prev(steps: WorkoutStep[], s: WorkoutState): Transition {
-  return skip(steps, s, prevExercise(steps, s.currentIndex));
+  const exercise = prevExercise(steps, currentExercise(steps, s.currentIndex));
+  return skip(steps, s, restBefore(steps, exercise));
 }
