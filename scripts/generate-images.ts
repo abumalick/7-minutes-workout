@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
+import sharp from "sharp";
 import type { ExerciseInstruction } from "../src/lib/exercise.ts";
 
 const id = process.argv[2];
@@ -13,6 +14,7 @@ if (!KEY) {
   process.exit(1);
 }
 const MODEL = "gpt-image-1";
+const IMAGE_PX = 512;
 const force = process.argv.includes("--force");
 // Any non-flag args after the id filter which slugs to (re)generate, e.g. `03-pont-fessier`.
 const only = process.argv.slice(3).filter((a) => !a.startsWith("--"));
@@ -70,6 +72,15 @@ const generate = async (prompt: string): Promise<Buffer> => {
   throw new Error(lastErr);
 };
 
+// gpt-image-1 returns 1024×1024 RGBA (~1.4MB each) and these ship in the app bundle, but
+// the panel only ever renders them ~256px. Halving to 512 still leaves 2× for retina, and
+// a palette cuts the rest: flat two-tone pictograms quantize with no visible loss (~12KB).
+const optimize = (png: Buffer): Promise<Buffer> =>
+  sharp(png)
+    .resize(IMAGE_PX, IMAGE_PX, { fit: "inside", withoutEnlargement: true })
+    .png({ palette: true, quality: 90, effort: 10 })
+    .toBuffer();
+
 const failed: string[] = [];
 for (const ex of poses) {
   if (only.length && !only.includes(ex.slug)) continue;
@@ -81,7 +92,7 @@ for (const ex of poses) {
   const { accent, view, pose } = ex.image!;
   const prompt = `${style(accent, view)} Pose: ${pose}`;
   try {
-    await writeFile(out, await generate(prompt));
+    await writeFile(out, await optimize(await generate(prompt)));
     console.log("wrote", out);
   } catch {
     console.error("FAIL", ex.slug);

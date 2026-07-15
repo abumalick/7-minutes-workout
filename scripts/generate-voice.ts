@@ -14,6 +14,10 @@ if (!KEY) {
 }
 const VOICE_ID = process.env.ELEVENLABS_VOICE_ID ?? "onwK4e9ZLuTAKqWW03F9";
 const MODEL = "eleven_multilingual_v2";
+// These mp3s ship in the bundle. The API defaults to 128kbps, which is twice what a single
+// spoken voice needs — 64kbps mono is transparent for speech. Ask for it at generation
+// rather than re-encoding after, so the clip is only ever encoded once.
+const OUTPUT_FORMAT = "mp3_44100_64";
 const force = process.argv.includes("--force");
 const only = process.argv.slice(3).filter((a) => !a.startsWith("--"));
 
@@ -37,19 +41,22 @@ for (const { slug, label, text } of instructions) {
     continue;
   }
   const spoken = `${spokenName(label)}. ${text}`;
-  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
-    method: "POST",
-    headers: {
-      "xi-api-key": KEY,
-      "content-type": "application/json",
-      accept: "audio/mpeg",
+  const res = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?output_format=${OUTPUT_FORMAT}`,
+    {
+      method: "POST",
+      headers: {
+        "xi-api-key": KEY,
+        "content-type": "application/json",
+        accept: "audio/mpeg",
+      },
+      body: JSON.stringify({
+        text: spoken,
+        model_id: MODEL,
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+      }),
     },
-    body: JSON.stringify({
-      text: spoken,
-      model_id: MODEL,
-      voice_settings: { stability: 0.5, similarity_boost: 0.75 },
-    }),
-  });
+  );
   if (!res.ok) {
     console.error("FAIL", slug, res.status, await res.text());
     process.exit(1);
