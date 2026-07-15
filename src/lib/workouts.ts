@@ -2,6 +2,7 @@ import type { Workout, WorkoutCues, WorkoutStep } from "./workout";
 import type { ExerciseInstruction } from "./exercise";
 import { instructions as backPainInstructions } from "./back-pain-instructions";
 import { instructions as officeBackInstructions } from "./office-back-instructions";
+import { instructions as sevenMinuteInstructions } from "./seven-minute-instructions";
 
 const cueUrls = import.meta.glob("./assets/voice/cues/fr/*.mp3", {
   eager: true,
@@ -25,40 +26,6 @@ const FR_CUES: WorkoutCues = {
     4: cueFor("4"),
     5: cueFor("5"),
   },
-};
-
-export const sevenMinuteWorkout: Workout = {
-  id: "seven-minute",
-  name: "Entraînement 7 minutes",
-  cues: FR_CUES,
-  steps: [
-    { label: "Rest", duration: 10 },
-    { label: "Jumping jacks", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Chaise contre le mur", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Pompes", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Crunch abdominal", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Montée sur chaise", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Squats", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Dips triceps sur chaise", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Planche", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Montées de genoux sur place", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Fentes", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Pompe avec rotation", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Planche latérale (gauche)", duration: 30 },
-    { label: "Rest", duration: 10 },
-    { label: "Planche latérale (droite)", duration: 30 },
-  ],
 };
 
 const voiceUrls = import.meta.glob("./assets/voice/**/*.mp3", {
@@ -100,6 +67,12 @@ export const buildWorkout = (
     steps: exercises.flatMap((step) => [{ label: "Rest", duration: 10, voice: step.voice }, step]),
   };
 };
+
+export const sevenMinuteWorkout = buildWorkout(
+  "seven-minute",
+  "Entraînement 7 minutes",
+  sevenMinuteInstructions,
+);
 
 export const backPainWorkout = buildWorkout(
   "back-pain",
