@@ -2,6 +2,7 @@ import type { Workout, WorkoutCues, WorkoutStep } from "./workout";
 import type { ExerciseInstruction } from "./exercise";
 import { instructions as backPainInstructions } from "./back-pain-instructions";
 import { instructions as officeBackInstructions } from "./office-back-instructions";
+import { instructions as sciaticaInstructions } from "./sciatica-instructions";
 import { instructions as sevenMinuteInstructions } from "./seven-minute-instructions";
 
 const cueUrls = import.meta.glob("./assets/voice/cues/fr/*.mp3", {
@@ -86,4 +87,15 @@ export const officeBackWorkout = buildWorkout(
   officeBackInstructions,
 );
 
-export const WORKOUTS: Workout[] = [sevenMinuteWorkout, backPainWorkout, officeBackWorkout];
+export const sciaticaWorkout = buildWorkout(
+  "sciatica",
+  "Soulagement sciatique",
+  sciaticaInstructions,
+);
+
+export const WORKOUTS: Workout[] = [
+  sevenMinuteWorkout,
+  backPainWorkout,
+  officeBackWorkout,
+  sciaticaWorkout,
+];
