@@ -1,6 +1,7 @@
 import type { Workout, WorkoutCues, WorkoutStep } from "./workout";
 import type { ExerciseInstruction } from "./exercise";
 import { instructions as backPainInstructions } from "./back-pain-instructions";
+import { instructions as backPhaseAInstructions } from "./back-phase-a-instructions";
 import { instructions as officeBackInstructions } from "./office-back-instructions";
 import { instructions as sciaticaInstructions } from "./sciatica-instructions";
 import { instructions as sevenMinuteInstructions } from "./seven-minute-instructions";
@@ -93,9 +94,16 @@ export const sciaticaWorkout = buildWorkout(
   sciaticaInstructions,
 );
 
+export const backPhaseAWorkout = buildWorkout(
+  "back-phase-a",
+  "Dos & sciatique — phase A",
+  backPhaseAInstructions,
+);
+
 export const WORKOUTS: Workout[] = [
   sevenMinuteWorkout,
   backPainWorkout,
   officeBackWorkout,
   sciaticaWorkout,
+  backPhaseAWorkout,
 ];
