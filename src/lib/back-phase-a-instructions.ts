@@ -12,8 +12,38 @@ export const instructions: ExerciseInstruction[] = [
       pose: "side profile, the whole body drawn as one continuous figure in front of a plain low rectangular ottoman (a simple solid block, no backrest, no legs); the person lies on their back on the floor with head, shoulders and torso flat on the ground and arms alongside the body, then the thighs turn straight upward at a right angle, and the calves continue horizontally forward across the flat top of the ottoman with the knees bent square directly above its near edge — the body outline forms a clear right-angled step, and the ottoman sits entirely behind and below the legs so the figure stays fully readable.",
     },
   },
+  // A2 — échelle d'extension, 4 crans. On n'en fait qu'UN par séance, et on ne monte
+  // d'un cran que lorsque le cran actuel ne réveille plus la douleur de jambe — sur
+  // plusieurs jours, jamais dans la même séance. Le cran actif ci-dessous est le 2.
+  //
+  // Cran 1 — « Ventre à plat », 150 s
+  //   "Allongé sur le ventre, à plat, la tête tournée d'un côté. Ne faites rien d'autre
+  //    que respirer et laisser le bas du dos se relâcher. C'est un exercice, même si ça
+  //    n'y ressemble pas."
+  //   pose : lying face down (prone) flat on the floor, arms relaxed alongside the body,
+  //   head turned to one side, hips and legs fully in contact with the ground.
+  //
+  // Cran 2 — « Extension sur le ventre » (sphinx), 150 s  ← ACTIF
+  //
+  // Cran 3 — « Extension sur les bras tendus », 60 s (10 répétitions)
+  //   "Sur le ventre, mains sous les épaules. Poussez sur les bras pour monter le buste
+  //    en gardant le bassin au sol, puis redescendez. Dix fois, sans forcer la fin de
+  //    course."
+  //   pose : lying face down (prone), both arms pushing straight and locked to lift the
+  //   chest high off the floor while the pelvis and thighs stay pressed to the ground,
+  //   the lower back arching (a cobra / press-up, not a plank).
+  //
+  // Cran 4 — comme le cran 3, plus de petits roulements du bassin d'un côté à l'autre
+  //   entre les répétitions ; même durée, même image que le cran 3.
+  //
+  // Pour changer de cran : remplacer label / duration / text / image.pose ci-dessous,
+  // puis régénérer les deux assets de ce slug —
+  //   ELEVENLABS_API_KEY=… ELEVENLABS_VOICE_ID=onwK4e9ZLuTAKqWW03F9 \
+  //     node scripts/generate-voice.ts back-phase-a --force 02-extension-ventre
+  //   OPENAI_API_KEY=… node scripts/generate-images.ts back-phase-a --force 02-extension-ventre
+  // (le mp3 dit le label avant la consigne : le regénérer n'est pas optionnel.)
   {
-    slug: "02-extension-sphinx",
+    slug: "02-extension-ventre",
     label: "Extension sur le ventre",
     duration: 150,
     text: "Sur le ventre, appuyé sur les avant-bras, le bassin reste au sol. Laissez le bas du dos se creuser sans forcer. La douleur doit remonter vers la fesse, jamais descendre dans la jambe.",
