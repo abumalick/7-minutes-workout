@@ -3,6 +3,9 @@ export type WorkoutStep = {
   duration: number;
   voice?: string;
   image?: string;
+  // Steps that belong to one exercise — its preview Rest, its holds and the pauses
+  // between them — share a group, so manual skips move a whole exercise at a time.
+  group?: string;
 };
 // Shared spoken instructor cues: the "go" said as an exercise begins and the
 // countdown numbers keyed by the seconds shown (1..5).
@@ -28,22 +31,42 @@ export const isRest = (step: { label: string }): boolean => step.label === REST;
 const advance = (steps: WorkoutStep[], i: number): number => (i + 1) % steps.length;
 const retreat = (steps: WorkoutStep[], i: number): number => (i - 1 + steps.length) % steps.length;
 
-// Manual skip walks to the next/previous exercise, hopping over any Rest steps.
-const nextExercise = (steps: WorkoutStep[], i: number): number => {
+const nextNonRest = (steps: WorkoutStep[], i: number): number => {
   let j = advance(steps, i);
   while (isRest(steps[j]) && j !== i) j = advance(steps, j);
   return j;
 };
-const prevExercise = (steps: WorkoutStep[], i: number): number => {
+const prevNonRest = (steps: WorkoutStep[], i: number): number => {
   let j = retreat(steps, i);
   while (isRest(steps[j]) && j !== i) j = retreat(steps, j);
   return j;
 };
 
+const sameGroup = (a: WorkoutStep, b: WorkoutStep): boolean =>
+  a.group !== undefined && a.group === b.group;
+
+const firstOfGroup = (steps: WorkoutStep[], i: number): number =>
+  steps[i].group === undefined ? i : steps.findIndex((s) => !isRest(s) && sameGroup(s, steps[i]));
+
+// Manual skip walks to the first step of the next/previous exercise, hopping over
+// Rest steps and over the other holds of the current exercise.
+const nextExercise = (steps: WorkoutStep[], i: number): number => {
+  let j = i;
+  do j = nextNonRest(steps, j);
+  while (sameGroup(steps[j], steps[i]) && j !== i);
+  return j;
+};
+const prevExercise = (steps: WorkoutStep[], i: number): number => {
+  let j = i;
+  do j = prevNonRest(steps, j);
+  while (sameGroup(steps[j], steps[i]) && j !== i);
+  return firstOfGroup(steps, j);
+};
+
 // The exercise the current position belongs to: itself on an exercise, the one a
 // Rest previews on a rest.
 const currentExercise = (steps: WorkoutStep[], i: number): number =>
-  isRest(steps[i]) ? nextExercise(steps, i) : i;
+  isRest(steps[i]) ? nextNonRest(steps, i) : i;
 
 // The Rest that previews an exercise (the step just before it), so a skip lands on
 // the get-ready rest rather than straight on the exercise.
