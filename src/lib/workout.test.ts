@@ -19,6 +19,36 @@ describe("sequence", () => {
   });
 });
 
+describe("grouped holds", () => {
+  // Exercise "a" is two 10s holds split by a 5s pause; exercise "b" is one step.
+  const G = [
+    { label: "Rest", duration: 10, voice: "a.mp3", group: "a" },
+    { label: "A 1/2", duration: 10, voice: "a.mp3", group: "a" },
+    { label: "Rest", duration: 5, group: "a" },
+    { label: "A 2/2", duration: 10, voice: "a.mp3", group: "a" },
+    { label: "Rest", duration: 10, voice: "b.mp3", group: "b" },
+    { label: "B", duration: 30, voice: "b.mp3", group: "b" },
+  ];
+
+  it("ends a hold into the pause like any exercise into a rest", () => {
+    expect(tick(G, at(1, 0))).toEqual({ state: at(2, 5), cues: ["success", "instruct"] });
+  });
+
+  it("next skips the remaining holds of the exercise, from a hold or from a pause", () => {
+    expect(next(G, at(1, 4)).state.currentIndex).toBe(4);
+    expect(next(G, at(2, 3)).state.currentIndex).toBe(4);
+  });
+
+  it("prev lands on the rest before the first hold of the previous exercise", () => {
+    expect(prev(G, at(5, 20)).state.currentIndex).toBe(0);
+    expect(prev(G, at(4, 10)).state.currentIndex).toBe(0);
+  });
+
+  it("prev from a later hold skips the earlier holds of the same exercise", () => {
+    expect(prev(G, at(3, 4)).state.currentIndex).toBe(4);
+  });
+});
+
 describe("tick", () => {
   it("counts down without cues above the last 5 seconds", () => {
     expect(tick(S, at(1, 30))).toEqual({ state: at(1, 29), cues: [] });

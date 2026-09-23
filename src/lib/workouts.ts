@@ -53,21 +53,25 @@ export const buildWorkout = (
   name: string,
   instructions: ExerciseInstruction[],
 ): Workout => {
-  const exercises: WorkoutStep[] = instructions.map((ex) => ({
-    label: ex.label,
-    duration: ex.duration,
-    voice: assetFor(voiceUrls, id, ex.slug, "mp3"),
-    image: assetFor(imageUrls, id, ex.slug, "png"),
-  }));
-  return {
-    id,
-    name,
-    cues: FR_CUES,
+  const steps = instructions.flatMap((ex): WorkoutStep[] => {
+    const group = ex.slug;
+    const voice = assetFor(voiceUrls, id, ex.slug, "mp3");
+    const image = assetFor(imageUrls, id, ex.slug, "png");
+    const sets = ex.sets;
+    // A set becomes numbered holds split by pauses; the pauses carry no voice, so they
+    // keep their own length and only beep instead of repeating the instruction.
+    const exercise: WorkoutStep[] = sets
+      ? Array.from({ length: sets.count }, (_, k): WorkoutStep[] => [
+          ...(k > 0 ? [{ label: "Rest", duration: sets.pause, group }] : []),
+          { label: `${ex.label} ${k + 1}/${sets.count}`, duration: sets.hold, voice, image, group },
+        ]).flat()
+      : [{ label: ex.label, duration: ex.duration, voice, image, group }];
     // Every exercise — including the first — is preceded by a Rest that previews it:
     // the rest carries that exercise's voice so the instruction is spoken (and
     // replayable) during the rest, and the workout opens on a get-ready rest.
-    steps: exercises.flatMap((step) => [{ label: "Rest", duration: 10, voice: step.voice }, step]),
-  };
+    return [{ label: "Rest", duration: 10, voice, group }, ...exercise];
+  });
+  return { id, name, cues: FR_CUES, steps };
 };
 
 export const sevenMinuteWorkout = buildWorkout(

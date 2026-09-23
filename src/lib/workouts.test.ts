@@ -52,6 +52,34 @@ describe("buildWorkout", () => {
     expect(w.steps[2].voice).toBe(w.steps[3].voice);
   });
 
+  it("expands an exercise with sets into numbered holds split by silent pauses", () => {
+    const w = buildWorkout("back-pain", "X", [
+      {
+        slug: "12-gainage-alterne",
+        label: "A",
+        duration: 10,
+        text: "",
+        sets: { count: 3, hold: 10, pause: 5 },
+      },
+      { slug: "07-piriforme-droit", label: "B", duration: 30, text: "" },
+    ]);
+    expect(w.steps.map((s) => [s.label, s.duration])).toEqual([
+      ["Rest", 10],
+      ["A 1/3", 10],
+      ["Rest", 5],
+      ["A 2/3", 10],
+      ["Rest", 5],
+      ["A 3/3", 10],
+      ["Rest", 10],
+      ["B", 30],
+    ]);
+    // Only the preview rest speaks the instruction; a pause must not replay it.
+    expect(w.steps[0].voice).toBe(w.steps[1].voice);
+    expect(w.steps[2].voice).toBeUndefined();
+    expect(w.steps[2].image).toBeUndefined();
+    expect(w.steps.slice(0, 6).every((s) => s.group === "12-gainage-alterne")).toBe(true);
+  });
+
   it("throws on a slug with no matching asset", () => {
     expect(() =>
       buildWorkout("back-pain", "X", [{ slug: "nope", label: "A", duration: 30, text: "" }]),
