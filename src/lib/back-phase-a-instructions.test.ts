@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import { instructions } from "./back-phase-a-instructions";
 
 describe("back phase A instructions", () => {
-  it("has 11 exercises with unique slugs, positive durations, text, and a complete image", () => {
-    expect(instructions).toHaveLength(11);
+  it("has 7 exercises with unique slugs, positive durations, text, and a complete image", () => {
+    expect(instructions).toHaveLength(7);
     const slugs = instructions.map((e) => e.slug);
-    expect(new Set(slugs).size).toBe(11);
+    expect(new Set(slugs).size).toBe(7);
     for (const e of instructions) {
       expect(e.duration).toBeGreaterThan(0);
       expect(e.label.length).toBeGreaterThan(0);
