@@ -108,55 +108,57 @@ export const instructions: ExerciseInstruction[] = [
       pose: "half-kneeling lunge — left knee down on the floor, right foot forward flat with the front knee bent about 90 degrees, hips pressed forward, torso upright.",
     },
   },
+  // En pause tant que la douleur de jambe redescend sous le genou : la règle de recul du
+  // programme retire le gainage A8–A9 en premier. À décommenter quand la jambe remonte.
   // A8/A9 — gainage d'endurance. Des tenues courtes répétées, jamais une tenue longue :
   // c'est en tremblant de fatigue que le dos quitte la position neutre. On progresse en
   // ajoutant des tenues (count), pas en allongeant hold.
-  {
-    slug: "08-bird-dog-droit",
-    label: "Bird dog (jambe droite)",
-    duration: 10,
-    sets: { count: 5, hold: 10, pause: 5 },
-    text: "À quatre pattes, le dos plat comme une table. Serrez légèrement le ventre tout autour, sans le rentrer, et continuez à respirer. Tendez la jambe droite et le bras gauche, tenez dix secondes, puis reposez-les au bip. Cinq fois. Ne tenez jamais jusqu'à trembler.",
-    image: {
-      accent: "the lower back and core",
-      view: "side profile",
-      pose: "on all fours in a bird-dog — one arm extended straight forward and the opposite leg extended straight back, forming one horizontal line, torso level.",
-    },
-  },
-  {
-    slug: "09-bird-dog-gauche",
-    label: "Bird dog (jambe gauche)",
-    duration: 10,
-    sets: { count: 5, hold: 10, pause: 5 },
-    text: "Même chose de l'autre côté : jambe gauche et bras droit tendus, dos plat, dix secondes, puis on repose au bip.",
-    image: {
-      accent: "the lower back and core",
-      view: "side profile",
-      pose: "on all fours in a bird-dog — one arm extended straight forward and the opposite leg extended straight back, forming one horizontal line, torso level.",
-    },
-  },
-  {
-    slug: "10-planche-laterale-droite",
-    label: "Planche latérale sur les genoux (droite)",
-    duration: 10,
-    sets: { count: 5, hold: 10, pause: 5 },
-    text: "Allongé sur le côté droit, sur l'avant-bras, le coude sous l'épaule, les genoux pliés. Soulevez les hanches pour aligner genoux, hanches et épaules, tenez dix secondes en respirant, puis reposez les hanches au bip. Cinq fois, sans jamais tenir jusqu'à trembler.",
-    image: {
-      accent: "the obliques and the side of the hip",
-      view: "front view",
-      pose: "a modified side plank on the knees, supported on the RIGHT forearm, with the head end of the body at the RIGHT of the frame: the forearm flat on the floor with the elbow bent 90 degrees directly beneath the shoulder, both knees bent about 90 degrees and resting on the floor with the lower legs pointing backward behind the body, the hips lifted so the knees, hips and shoulders form one straight rising line, the free hand resting on the top hip.",
-    },
-  },
-  {
-    slug: "11-planche-laterale-gauche",
-    label: "Planche latérale sur les genoux (gauche)",
-    duration: 10,
-    sets: { count: 5, hold: 10, pause: 5 },
-    text: "Changez de côté : sur l'avant-bras gauche, genoux pliés. Hanches en haut dix secondes, puis on les repose au bip.",
-    image: {
-      accent: "the obliques and the side of the hip",
-      view: "front view",
-      pose: "a modified side plank on the knees, supported on the LEFT forearm, with the head end of the body at the LEFT of the frame: the forearm flat on the floor with the elbow bent 90 degrees directly beneath the shoulder, both knees bent about 90 degrees and resting on the floor with the lower legs pointing backward behind the body, the hips lifted so the knees, hips and shoulders form one straight rising line, the free hand resting on the top hip.",
-    },
-  },
+  // {
+  //   slug: "08-bird-dog-droit",
+  //   label: "Bird dog (jambe droite)",
+  //   duration: 10,
+  //   sets: { count: 5, hold: 10, pause: 5 },
+  //   text: "À quatre pattes, le dos plat comme une table. Serrez légèrement le ventre tout autour, sans le rentrer, et continuez à respirer. Tendez la jambe droite et le bras gauche, tenez dix secondes, puis reposez-les au bip. Cinq fois. Ne tenez jamais jusqu'à trembler.",
+  //   image: {
+  //     accent: "the lower back and core",
+  //     view: "side profile",
+  //     pose: "on all fours in a bird-dog — one arm extended straight forward and the opposite leg extended straight back, forming one horizontal line, torso level.",
+  //   },
+  // },
+  // {
+  //   slug: "09-bird-dog-gauche",
+  //   label: "Bird dog (jambe gauche)",
+  //   duration: 10,
+  //   sets: { count: 5, hold: 10, pause: 5 },
+  //   text: "Même chose de l'autre côté : jambe gauche et bras droit tendus, dos plat, dix secondes, puis on repose au bip.",
+  //   image: {
+  //     accent: "the lower back and core",
+  //     view: "side profile",
+  //     pose: "on all fours in a bird-dog — one arm extended straight forward and the opposite leg extended straight back, forming one horizontal line, torso level.",
+  //   },
+  // },
+  // {
+  //   slug: "10-planche-laterale-droite",
+  //   label: "Planche latérale sur les genoux (droite)",
+  //   duration: 10,
+  //   sets: { count: 5, hold: 10, pause: 5 },
+  //   text: "Allongé sur le côté droit, sur l'avant-bras, le coude sous l'épaule, les genoux pliés. Soulevez les hanches pour aligner genoux, hanches et épaules, tenez dix secondes en respirant, puis reposez les hanches au bip. Cinq fois, sans jamais tenir jusqu'à trembler.",
+  //   image: {
+  //     accent: "the obliques and the side of the hip",
+  //     view: "front view",
+  //     pose: "a modified side plank on the knees, supported on the RIGHT forearm, with the head end of the body at the RIGHT of the frame: the forearm flat on the floor with the elbow bent 90 degrees directly beneath the shoulder, both knees bent about 90 degrees and resting on the floor with the lower legs pointing backward behind the body, the hips lifted so the knees, hips and shoulders form one straight rising line, the free hand resting on the top hip.",
+  //   },
+  // },
+  // {
+  //   slug: "11-planche-laterale-gauche",
+  //   label: "Planche latérale sur les genoux (gauche)",
+  //   duration: 10,
+  //   sets: { count: 5, hold: 10, pause: 5 },
+  //   text: "Changez de côté : sur l'avant-bras gauche, genoux pliés. Hanches en haut dix secondes, puis on les repose au bip.",
+  //   image: {
+  //     accent: "the obliques and the side of the hip",
+  //     view: "front view",
+  //     pose: "a modified side plank on the knees, supported on the LEFT forearm, with the head end of the body at the LEFT of the frame: the forearm flat on the floor with the elbow bent 90 degrees directly beneath the shoulder, both knees bent about 90 degrees and resting on the floor with the lower legs pointing backward behind the body, the hips lifted so the knees, hips and shoulders form one straight rising line, the free hand resting on the top hip.",
+  //   },
+  // },
 ];
