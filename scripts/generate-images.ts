@@ -8,12 +8,14 @@ if (!id || id.startsWith("--")) {
   console.error("Usage: node scripts/generate-images.ts <workout-id> [--force] [slug...]");
   process.exit(1);
 }
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
 const KEY = process.env.OPENAI_API_KEY;
-if (!KEY) {
-  console.error("Set OPENAI_API_KEY");
+if (!KEY && !OPENROUTER_KEY) {
+  console.error("Set OPENAI_API_KEY (or OPENROUTER_API_KEY as a fallback)");
   process.exit(1);
 }
 const MODEL = "gpt-image-1";
+const OPENROUTER_MODEL = "google/gemini-3.1-flash-image";
 const IMAGE_PX = 512;
 const force = process.argv.includes("--force");
 // Any non-flag args after the id filter which slugs to (re)generate, e.g. `03-pont-fessier`.
@@ -43,7 +45,49 @@ const style = (accent: string, view: string): string =>
 // poses, so retry a few times before giving up on an image.
 const ATTEMPTS = 3;
 
+// OpenRouter image models cannot output transparency, so ask for a pure white
+// background and key it out afterwards.
+const generateViaOpenRouter = async (prompt: string): Promise<Buffer> => {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${OPENROUTER_KEY}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: OPENROUTER_MODEL,
+      modalities: ["image", "text"],
+      messages: [
+        {
+          role: "user",
+          content: prompt.replace(
+            "transparent background",
+            "plain pure white (#ffffff) background",
+          ),
+        },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  const json = (await res.json()) as {
+    choices: { message: { images?: { image_url: { url: string } }[] } }[];
+  };
+  const url = json.choices[0]?.message.images?.[0]?.image_url.url;
+  if (!url) throw new Error(`no image in response: ${JSON.stringify(json).slice(0, 300)}`);
+  const { data, info } = await sharp(Buffer.from(url.split(",")[1], "base64"))
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  for (let i = 0; i < data.length; i += 4) {
+    const min = Math.min(data[i], data[i + 1], data[i + 2]);
+    if (min >= 250) data[i + 3] = 0;
+    else if (min > 215) data[i + 3] = Math.round(((250 - min) / 35) * 255);
+  }
+  return sharp(data, { raw: info }).png().toBuffer();
+};
+
 const generate = async (prompt: string): Promise<Buffer> => {
+  if (!KEY) return generateViaOpenRouter(prompt);
   let lastErr = "";
   for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
     const res = await fetch("https://api.openai.com/v1/images/generations", {
